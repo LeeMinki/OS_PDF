@@ -24,10 +24,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.app.AlertDialog;
 
+import com.github.barteksc.pdfviewer.PDFView;
+import com.github.barteksc.pdfviewer.util.FitPolicy;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-// can i change
+
 public class MainActivity extends AppCompatActivity {
     private static final int MY_PERMISSION_STORAGE = 1111;
     private String mFileName;
@@ -38,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
     private List<String> lPath = null;
     private String mRoot = Environment.getExternalStorageDirectory().getAbsolutePath();
     private TextView mPath;
+    private String ext;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -61,12 +65,13 @@ public class MainActivity extends AppCompatActivity {
                     }
                 } else {
                     mFileName = file.getName();
-                    Log.i("Test", "ext:" + mFileName.substring(mFileName.lastIndexOf('.') + 1, mFileName.length()));
+                    Log.i("Test", "Touch File Name:" + mFileName);
+                    viewPdf(file);
                 }
             }
         });
     }
-    // whoami??????
+
     private void getDir(String dirPath) {
         mPath.setText("Location: " + dirPath);
         Log.i("Test", "mPath:" + mPath.getText());
@@ -77,7 +82,6 @@ public class MainActivity extends AppCompatActivity {
         File f = new File(dirPath);
         File[] files = f.listFiles();
 
-
         if (!dirPath.equals(mRoot)) {
             lItem.add("../"); //to parent folder
             lPath.add(f.getParent());
@@ -85,12 +89,19 @@ public class MainActivity extends AppCompatActivity {
 
         for (int i = 0; i < files.length; i++) {
             File file = files[i];
-            lPath.add(file.getAbsolutePath());
 
-            if (file.isDirectory())
-                lItem.add(file.getName() + "/");
-            else
+            if (file.isDirectory()) {
+                lPath.add(file.getAbsolutePath());
                 lItem.add(file.getName());
+            }
+            else {
+                mFileName = file.getName();
+                ext = mFileName.substring(file.getName().lastIndexOf('.') + 1, mFileName.length());
+                if (ext.equals("pdf")) {
+                    lPath.add(file.getAbsolutePath());
+                    lItem.add(file.getName());
+                }
+            }
         }
 
         ArrayAdapter<String> fileList = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, lItem);
@@ -145,5 +156,26 @@ public class MainActivity extends AppCompatActivity {
 
                 break;
         }
+    }
+
+    private void viewPdf(File pdfFile) {
+        setContentView(R.layout.pdf_layout);
+        PDFView pdfView = findViewById(R.id.pdfView);
+        pdfView.fromFile(pdfFile).load();
+
+
+//        pdfView.fromAsset(mFileName)
+//                .enableSwipe(true) // allows to block changing pages using swipe
+//                .swipeHorizontal(true)
+//                .enableDoubletap(true)
+//                .defaultPage(0)
+//                .enableAnnotationRendering(false) // render annotations (such as comments, colors or forms)
+//                .password(null)
+//                .scrollHandle(null)
+//                .enableAntialiasing(true) // improve rendering a little bit on low-res screens
+//                // spacing between pages in dp. To define spacing color, set view background
+//                .spacing(0)
+//                .pageFitPolicy(FitPolicy.WIDTH)
+//                .load();
     }
 }
