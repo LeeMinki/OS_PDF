@@ -1,4 +1,4 @@
-package com.example.os_pdf;
+package com.MoP.os_pdf;
 
 import org.junit.Test;
 
