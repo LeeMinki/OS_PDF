@@ -1,7 +1,6 @@
 package com.example.os_pdf;
 
 import android.Manifest;
-import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -23,9 +22,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.app.AlertDialog;
-
-import com.github.barteksc.pdfviewer.PDFView;
-import com.github.barteksc.pdfviewer.util.FitPolicy;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -64,9 +60,11 @@ public class MainActivity extends AppCompatActivity {
                         Toast.makeText(mContext, "No files in this folder.", Toast.LENGTH_SHORT).show();
                     }
                 } else {
-                    mFileName = file.getName();
+                    mFileName = file.getAbsolutePath();
                     Log.i("Test", "Touch File Name:" + mFileName);
-                    viewPdf(file);
+                    Intent intent = new Intent(MainActivity.this, PdfActivity.class);
+                    intent.putExtra("fileName", mFileName);
+                    startActivity(intent) ;
                 }
             }
         });
@@ -156,26 +154,5 @@ public class MainActivity extends AppCompatActivity {
 
                 break;
         }
-    }
-
-    private void viewPdf(File pdfFile) {
-        setContentView(R.layout.pdf_layout);
-        PDFView pdfView = findViewById(R.id.pdfView);
-        pdfView.fromFile(pdfFile).load();
-
-
-//        pdfView.fromAsset(mFileName)
-//                .enableSwipe(true) // allows to block changing pages using swipe
-//                .swipeHorizontal(true)
-//                .enableDoubletap(true)
-//                .defaultPage(0)
-//                .enableAnnotationRendering(false) // render annotations (such as comments, colors or forms)
-//                .password(null)
-//                .scrollHandle(null)
-//                .enableAntialiasing(true) // improve rendering a little bit on low-res screens
-//                // spacing between pages in dp. To define spacing color, set view background
-//                .spacing(0)
-//                .pageFitPolicy(FitPolicy.WIDTH)
-//                .load();
     }
 }
