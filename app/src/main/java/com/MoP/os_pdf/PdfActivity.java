@@ -66,19 +66,6 @@ public class PdfActivity extends Activity {
     }
 
     private void extractImage(String pdfFilePath) {
-//        try {
-//            File file = new File(pdfFilePath);
-//            PDDocument document = PDDocument.load(file);
-//            pdfStripper = new PDFTextStripper();
-//
-//            PDFRenderer renderer = new PDFRenderer(document);
-//            Bitmap image = renderer.renderImage(0);
-//            resultImageView = findViewById(R.id.imageView);
-//            resultImageView.setImageBitmap(image);
-//            document.close();
-//        } catch (Exception e) {
-//            //...
-//        }
         LinearLayout layout = (LinearLayout)findViewById(R.id.linearLayout);
         try {
             File file = new File(pdfFilePath);
