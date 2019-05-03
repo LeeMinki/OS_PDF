@@ -11,11 +11,12 @@
     <!--android:layout_height="match_parent" />-->
     <LinearLayout
         android:id="@+id/linearLayout2"
-        android:layout_width="414dp"
+        android:layout_width="0dp"
         android:layout_height="426dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/scrollView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -27,17 +28,32 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="#00ff0000"
-            android:text="before" />
+            android:text="prev" />
 
-        <TextView
-            android:id="@+id/textView"
-            android:layout_width="280dp"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scrollbars="vertical"
-            android:singleLine="false"
-            android:gravity="center"
-            android:textColor="@android:color/black"
-            android:textSize="25sp" />
+            android:layout_weight="2.5"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/view_button"
+                android:layout_width="match_parent"
+                android:layout_height="85dp"
+                android:background="#00ff0000"
+
+                android:text="ALL" />
+
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:scrollbars="vertical"
+                android:singleLine="false"
+                android:textColor="@android:color/black"
+                android:textSize="25sp" />
+        </LinearLayout>
 
         <Button
             android:id="@+id/button"
@@ -51,14 +67,18 @@
 
     <ScrollView
         android:id="@+id/scrollView"
-        android:layout_width="411dp"
+        android:layout_width="0dp"
         android:layout_height="281dp"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout2"
-        app:layout_constraintVertical_bias="1.0"
-        tools:layout_editor_absoluteX="1dp">
+        app:layout_constraintVertical_bias="1.0">
 
         <LinearLayout
             android:id="@+id/linearLayout"

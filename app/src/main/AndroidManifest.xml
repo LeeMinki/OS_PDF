@@ -19,6 +19,8 @@
             </intent-filter>
         </activity>
         <activity android:name="com.MoP.os_pdf.PdfActivity" />
+        <activity android:name="com.MoP.os_pdf.AllPdfActivity" />
+
     </application>
 
 </manifest>

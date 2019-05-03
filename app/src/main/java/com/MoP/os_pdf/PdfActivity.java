@@ -4,41 +4,31 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.support.constraint.ConstraintLayout;
-import android.text.Layout;
 import android.text.method.ScrollingMovementMethod;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import java.text.BreakIterator;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.lang.String;
 
 import com.tom_roush.pdfbox.cos.COSName;
 import com.tom_roush.pdfbox.pdmodel.PDDocument;
 import com.tom_roush.pdfbox.pdmodel.PDPage;
-import com.tom_roush.pdfbox.pdmodel.PDPageContentStream;
 import com.tom_roush.pdfbox.pdmodel.PDPageTree;
 import com.tom_roush.pdfbox.pdmodel.PDResources;
 import com.tom_roush.pdfbox.pdmodel.graphics.PDXObject;
 import com.tom_roush.pdfbox.pdmodel.graphics.image.PDImageXObject;
-import com.tom_roush.pdfbox.rendering.PDFRenderer;
 import com.tom_roush.pdfbox.text.PDFTextStripper;
 import com.tom_roush.pdfbox.util.PDFBoxResourceLoader;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.BreakIterator;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
-import java.io.FileInputStream;
-import java.io.InputStream;
 //
-import opennlp.tools.sentdetect.SentenceDetectorME;
-import opennlp.tools.sentdetect.SentenceModel;
-import opennlp.tools.util.StringUtil;
 
 public class PdfActivity extends Activity {
     private String filePath;
@@ -97,6 +87,17 @@ public class PdfActivity extends Activity {
         });
 
         extractImage(filePath);
+
+        // pdf 전체 보기
+        Button viewButton = (Button) findViewById(R.id.view_button);
+        viewButton.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(PdfActivity.this, AllPdfActivity.class);
+                intent.putExtra("fileName", filePath);
+                startActivity(intent);
+            }
+        });
     }
 //    private void viewPdf(String pdfFileName) {
 //        File pdfFile = new File(pdfFileName);
