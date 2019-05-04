@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
                     Log.i("Test", "Touch File Name:" + mFileName);
                     Intent intent = new Intent(MainActivity.this, PdfActivity.class);
                     intent.putExtra("fileName", mFileName);
-                    startActivity(intent) ;
+                    startActivity(intent);
                 }
             }
         });
@@ -91,8 +91,7 @@ public class MainActivity extends AppCompatActivity {
             if (file.isDirectory()) {
                 lPath.add(file.getAbsolutePath());
                 lItem.add(file.getName());
-            }
-            else {
+            } else {
                 mFileName = file.getName();
                 ext = mFileName.substring(file.getName().lastIndexOf('.') + 1, mFileName.length());
                 if (ext.equals("pdf")) {
