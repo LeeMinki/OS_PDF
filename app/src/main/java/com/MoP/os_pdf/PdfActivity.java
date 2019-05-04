@@ -1,16 +1,28 @@
 package com.MoP.os_pdf;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+
+import android.support.v7.widget.Toolbar;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+import android.support.v4.view.ViewPager;
+
 
 import com.tom_roush.pdfbox.cos.COSName;
 import com.tom_roush.pdfbox.pdmodel.PDDocument;
@@ -42,82 +54,136 @@ import opennlp.tools.parser.ParserModel;
 
 //
 
-public class PdfActivity extends Activity {
+public class PdfActivity extends AppCompatActivity implements View.OnTouchListener {
     private String filePath;
     private PDFTextStripper pdfStripper;
     private String text;
     private TextView resultTextView;
     List<String> sentences = new ArrayList<>();
 
+
     BreakIterator iterator = BreakIterator.getSentenceInstance(Locale.US);
     private int count = 0;
 
+    Toolbar myToolbar;
+    float initX = 0;
+    float initY = 0;
+    float changeX = 0;
+    float changeY = 0;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.pdf_layout);
+        resultTextView = (TextView)findViewById(R.id.textView);
+        resultTextView.setOnTouchListener(this);
         PDFBoxResourceLoader.init(getApplicationContext());
         Intent intent = getIntent();
 
         filePath = intent.getExtras().getString("fileName");
 //        viewPdf(fileName);
         extractText(filePath);
-        Button button = (Button) findViewById(R.id.button);
-        Button button1 = (Button) findViewById(R.id.button1);
-        button.setOnClickListener(new Button.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (0 <= count && count < sentences.size()) {
-                    count++;
 
-                    if (count < 0)
-                        count = 0;
-                    if (count >= sentences.size())
-                        count = sentences.size();
-                    resultTextView.setText(sentences.get(count));
-                }
-
-
-            }
-        });
-        button1.setOnClickListener(new Button.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (0 <= count && count < sentences.size()) {
-                    count--;
-
-
-                    if (count < 0)
-                        count = 0;
-                    if (count > sentences.size())
-                        count = sentences.size();
-                    resultTextView.setText(sentences.get(count));
-                }
-
-
-            }
-        });
+        myToolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(myToolbar);
+        getSupportActionBar().setTitle(null);
+        myToolbar.setBackgroundColor(Color.argb(50,50,50,50));
 
         extractImage(filePath);
 
-        // pdf 전체 보기
-        Button viewButton = (Button) findViewById(R.id.view_button);
-        viewButton.setOnClickListener(new Button.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(PdfActivity.this, AllPdfActivity.class);
-                intent.putExtra("fileName", filePath);
-                startActivity(intent);
-            }
-        });
+//        // pdf 전체 보기
+//        Button viewButton = (Button) findViewById(R.id.view_button);
+//        viewButton.setOnClickListener(new Button.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Intent intent = new Intent(PdfActivity.this, AllPdfActivity.class);
+//                intent.putExtra("fileName", filePath);
+//                startActivity(intent);
+//            }
+//        });
     }
-//    private void viewPdf(String pdfFileName) {
+
+    //    private void viewPdf(String pdfFileName) {
 //        File pdfFile = new File(pdfFileName);
 //        setContentView(R.layout.pdf_layout);
 //        PDFView pdfView = findViewById(R.id.pdfView);
 //        pdfView.fromFile(pdfFile).load();
 //    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.pdf_menu, menu) ;
+
+        return true ;
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.setting:
+                Toast.makeText(this, "setting.", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.all_view:
+                Intent intent = new Intent(PdfActivity.this, AllPdfActivity.class);
+                intent.putExtra("fileName", filePath);
+                startActivity(intent);
+                break;
+        }
+
+        return true;
+
+
+    }
+    @Override
+    public boolean onTouch(View v, MotionEvent event){
+        initX = event.getX();
+        initY = event.getY();
+        switch (event.getAction()){
+            case MotionEvent.ACTION_DOWN:
+                initX = event.getX();
+                initY = event.getY();
+                break;
+            case MotionEvent.ACTION_MOVE:
+                changeX = event.getX();
+                changeY = event.getY();
+                break;
+            case MotionEvent.ACTION_UP:
+                changeX = event.getX();
+                changeY = event.getY();
+
+                break;
+                default:
+                    return false;
+
+        }
+        if(changeX - initX > 240){
+            if (0 <= count && count < sentences.size()) {
+                count--;
+
+
+                if (count < 0)
+                    count = 0;
+                if (count > sentences.size())
+                    count = sentences.size() - 1;
+                resultTextView.setText(sentences.get(count));
+            }
+        }
+        else if(initX - changeX > 240){
+            if (0 <= count && count < sentences.size()) {
+                count++;
+
+                if (count < 0)
+                    count = 0;
+                if (count >= sentences.size())
+                    count = sentences.size() - 1;
+                resultTextView.setText(sentences.get(count));
+            }
+        }
+
+        return true;
+
+    }
+
 
     private void extractText(String pdfFilePath) {
         File file = new File(pdfFilePath);
@@ -137,6 +203,12 @@ public class PdfActivity extends Activity {
             //...
         }
     }
+
+
+
+
+
+
 
     private void parsing(String text) {
 
@@ -313,7 +385,14 @@ public class PdfActivity extends Activity {
 
                 }
                 //맨 끝이 ,&:(로 끝나면 그 다음거랑 합쳐줌.
-
+                if(sentences.size() > 1){
+                    String str_g = sentences.get(sentences.size() - 2);
+                    str_g = str_g.trim();
+                    String end = str_g.substring(str_g.length()-1, str_g.length());
+                    if(end.equals(",")||end.equals("{")||end.equals("&")||end.equals(":")||end.equals("(")||end.equals("[")){
+                        merge();
+                    }
+                }
 
 
 

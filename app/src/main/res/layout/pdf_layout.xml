@@ -9,26 +9,30 @@
     <!--android:id="@+id/pdfView"-->
     <!--android:layout_width="match_parent"-->
     <!--android:layout_height="match_parent" />-->
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:background="@color/colorPrimary"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout2"
+        app:layout_constraintTop_toTopOf="parent"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
+
     <LinearLayout
         android:id="@+id/linearLayout2"
         android:layout_width="0dp"
-        android:layout_height="426dp"
+        android:layout_height="0dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
         android:layout_marginEnd="8dp"
         app:layout_constraintBottom_toTopOf="@+id/scrollView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@+id/toolbar">
 
-        <Button
-            android:id="@+id/button1"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="#00ff0000"
-            android:text="prev" />
+
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -36,32 +40,18 @@
             android:layout_weight="2.5"
             android:orientation="vertical">
 
-            <Button
-                android:id="@+id/view_button"
-                android:layout_width="match_parent"
-                android:layout_height="85dp"
-                android:background="#00ff0000"
-
-                android:text="ALL" />
 
             <TextView
                 android:id="@+id/textView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:gravity="center_vertical"
                 android:scrollbars="vertical"
-                android:gravity="center_horizontal"
                 android:singleLine="false"
                 android:textColor="@android:color/black"
                 android:textSize="25sp" />
         </LinearLayout>
 
-        <Button
-            android:id="@+id/button"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="#00ff0000"
-            android:text="next" />
 
     </LinearLayout>
 

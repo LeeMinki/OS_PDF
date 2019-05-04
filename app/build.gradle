@@ -28,6 +28,7 @@ dependencies {
     implementation 'com.github.barteksc:android-pdf-viewer:3.1.0-beta.1'
     implementation 'com.tom_roush:pdfbox-android:1.8.10.1'
     implementation 'org.apache.opennlp:opennlp:1.9.1'
+    implementation 'me.relex:circleindicator:1.2.2'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
