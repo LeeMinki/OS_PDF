@@ -33,6 +33,15 @@
         app:layout_constraintTop_toBottomOf="@+id/toolbar">
 
 
+        <Button
+            android:id="@+id/prev"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="2.5"
+            android:background="#00ff0000"
+            android:text="prev" />
+
+
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -40,18 +49,31 @@
             android:layout_weight="2.5"
             android:orientation="vertical">
 
-
-            <TextView
-                android:id="@+id/textView"
+            <TextSwitcher
+                android:id="@+id/textSwitcher"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center_vertical"
-                android:scrollbars="vertical"
-                android:singleLine="false"
-                android:textColor="@android:color/black"
-                android:textSize="25sp" />
-        </LinearLayout>
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="50dp" />
 
+            <!--<TextView-->
+                <!--android:id="@+id/textView"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="match_parent"-->
+                <!--android:gravity="center_vertical"-->
+                <!--android:scrollbars="vertical"-->
+                <!--android:singleLine="false"-->
+                <!--android:textColor="@android:color/black"-->
+                <!--android:textSize="25sp" />-->
+
+        </LinearLayout>
+        <Button
+            android:id="@+id/next"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="2.5"
+            android:background="#00ff0000"
+            android:text="next" />
 
     </LinearLayout>
 

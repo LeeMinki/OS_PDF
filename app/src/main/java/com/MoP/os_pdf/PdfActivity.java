@@ -11,17 +11,22 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextSwitcher;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.support.v4.view.ViewPager;
+import android.widget.ViewSwitcher;
 
 
 import com.tom_roush.pdfbox.cos.COSName;
@@ -52,33 +57,49 @@ import opennlp.tools.parser.Parser;
 import opennlp.tools.parser.ParserFactory;
 import opennlp.tools.parser.ParserModel;
 
-//
 
 public class PdfActivity extends AppCompatActivity implements View.OnTouchListener {
     private String filePath;
     private PDFTextStripper pdfStripper;
     private String text;
-    private TextView resultTextView;
+    //private TextView resultTextView;
+
+
     List<String> sentences = new ArrayList<>();
 
+    private static Button next;
+    private static Button prev;
+    private static TextSwitcher textswitcher;
+    Animation in;
+    Animation out;
 
     BreakIterator iterator = BreakIterator.getSentenceInstance(Locale.US);
     private int count = 0;
 
     Toolbar myToolbar;
+
+
     float initX = 0;
     float initY = 0;
     float changeX = 0;
     float changeY = 0;
 
+
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.pdf_layout);
-        resultTextView = (TextView)findViewById(R.id.textView);
-        resultTextView.setOnTouchListener(this);
+        //resultTextView = (TextView)findViewById(R.id.textView);
+//        resultTextView.setOnTouchListener(this);
         PDFBoxResourceLoader.init(getApplicationContext());
         Intent intent = getIntent();
+
+        // Call all the methods
+        init();
+        loadAnimations();
+        setFactory();
+        setListener();
 
         filePath = intent.getExtras().getString("fileName");
 //        viewPdf(fileName);
@@ -91,25 +112,43 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
 
         extractImage(filePath);
 
-//        // pdf 전체 보기
-//        Button viewButton = (Button) findViewById(R.id.view_button);
-//        viewButton.setOnClickListener(new Button.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Intent intent = new Intent(PdfActivity.this, AllPdfActivity.class);
-//                intent.putExtra("fileName", filePath);
-//                startActivity(intent);
-//            }
-//        });
     }
 
-    //    private void viewPdf(String pdfFileName) {
-//        File pdfFile = new File(pdfFileName);
-//        setContentView(R.layout.pdf_layout);
-//        PDFView pdfView = findViewById(R.id.pdfView);
-//        pdfView.fromFile(pdfFile).load();
-//    }
 
+    void init() {
+        textswitcher = (TextSwitcher) findViewById(R.id.textSwitcher);
+        next = (Button) findViewById(R.id.next);
+        prev = (Button) findViewById(R.id.prev);
+
+    }
+    void loadAnimations() {
+
+        // Declare the in and out animations and initialize them
+        in = AnimationUtils.loadAnimation(this,
+                android.R.anim.slide_in_left);
+        out = AnimationUtils.loadAnimation(this,
+                android.R.anim.slide_out_right);
+
+        // set the animation type of textSwitcher
+//        textswitcher.setInAnimation(in);
+//        textswitcher.setOutAnimation(out);
+    }
+    // Set Factory for the textSwitcher *Compulsory part
+    void setFactory() {
+        textswitcher.setFactory(new ViewSwitcher.ViewFactory() {
+
+            public View makeView() {
+
+                // Create run time textView with some attributes like gravity,
+                // color, etc.
+                TextView myText = new TextView(PdfActivity.this);
+                myText.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL);
+                myText.setTextSize(30);
+                return myText;
+            }
+        });
+
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -134,6 +173,69 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
 
 
     }
+//    void setListener(){
+//        if(changeX - initX > 240){
+//            if (0 <= count && count < sentences.size()) {
+//                count--;
+//
+//
+//                if (count < 0)
+//                    count = 0;
+//                if (count > sentences.size())
+//                    count = sentences.size() - 1;
+//                resultTextView.setText(sentences.get(count));
+//            }
+//        }
+//        else if(initX - changeX > 240){
+//
+//        }
+//    }
+    void setListener() {
+        // ClickListener for NEXT button
+        // When clicked on Button TextSwitcher will switch between texts
+        // The current Text will go OUT and next text will come in with
+        // specified animation
+        next.setOnClickListener(new View.OnClickListener() {
+
+            public void onClick(View v) {
+                in = AnimationUtils.loadAnimation(PdfActivity.this,
+                        R.anim.right_in);
+                out = AnimationUtils.loadAnimation(PdfActivity.this,
+                        R.anim.left_out);
+                textswitcher.setInAnimation(in);
+                textswitcher.setOutAnimation(out);
+                if (0 <= count && count < sentences.size()) {
+                    count++;
+                    if (count < 0)
+                        count = 0;
+                    if (count > sentences.size())
+                        count = sentences.size() - 1;
+                    textswitcher.setText(sentences.get(count).toString());
+                    //count++;
+                }
+            }
+        });
+        prev.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                in = AnimationUtils.loadAnimation(PdfActivity.this,
+                        R.anim.left_in);
+                out = AnimationUtils.loadAnimation(PdfActivity.this,
+                        R.anim.right_out);
+                textswitcher.setInAnimation(in);
+                textswitcher.setOutAnimation(out);
+
+                if (0 <= count && count < sentences.size()) {
+                    count--;
+                    if (count < 0)
+                        count = 0;
+                    if (count >= sentences.size())
+                        count = sentences.size() - 1;
+                    textswitcher.setText(sentences.get(count).toString());
+                }
+            }
+        });
+    }
     @Override
     public boolean onTouch(View v, MotionEvent event){
         initX = event.getX();
@@ -156,29 +258,7 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
                     return false;
 
         }
-        if(changeX - initX > 240){
-            if (0 <= count && count < sentences.size()) {
-                count--;
 
-
-                if (count < 0)
-                    count = 0;
-                if (count > sentences.size())
-                    count = sentences.size() - 1;
-                resultTextView.setText(sentences.get(count));
-            }
-        }
-        else if(initX - changeX > 240){
-            if (0 <= count && count < sentences.size()) {
-                count++;
-
-                if (count < 0)
-                    count = 0;
-                if (count >= sentences.size())
-                    count = sentences.size() - 1;
-                resultTextView.setText(sentences.get(count));
-            }
-        }
 
         return true;
 
@@ -190,14 +270,14 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
         try {
             PDDocument document = PDDocument.load(file);
             pdfStripper = new PDFTextStripper();
-            resultTextView = findViewById(R.id.textView);
+            //resultTextView = findViewById(R.id.textView);
             text = pdfStripper.getText(document);
 
-            resultTextView.setMovementMethod(ScrollingMovementMethod.getInstance());
+            //.setMovementMethod(ScrollingMovementMethod.getInstance());
             parsing(text);
 
 
-            resultTextView.setText(sentences.get(0));
+            //resultTextView.setText(sentences.get(0));
             document.close();
         } catch (Exception e) {
             //...
