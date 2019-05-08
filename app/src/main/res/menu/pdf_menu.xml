@@ -1,28 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    >
-    <item
-        android:id="@+id/setting"
-        android:icon="@drawable/ic_action_name"
-        android:title="setting"
-        app:showAsAction="always"
-        />
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <group
+        android:icon="@drawable/ic_action_name">
+        <item
+            android:id="@+id/setting_Font_size"
+            android:title="글자 크기" />
+
+        <item
+            android:id="@+id/setting_number_of_sentences"
+            android:title="문장 개수" />
+    </group>
     <item
         android:id="@+id/all_view"
         android:icon="@drawable/ic_action_entire"
         android:title="entire"
-        app:showAsAction="always"
-        />
+        app:showAsAction="always" />
 
 
     <!--<item android:id="@+id/action_bt2"-->
-        <!--android:title="액션버튼2"-->
-        <!--app:showAsAction="never" />-->
+    <!--android:title="액션버튼2"-->
+    <!--app:showAsAction="never" />-->
 
     <!--<item android:id="@+id/action_bt3"-->
-        <!--android:title="액션버튼3"-->
-        <!--app:showAsAction="never" />-->
+    <!--android:title="액션버튼3"-->
+    <!--app:showAsAction="never" />-->
 
 
 </menu>

@@ -6,11 +6,13 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 
 import android.support.v7.widget.Toolbar;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -19,9 +21,13 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.PopupMenu;
 import android.widget.TextSwitcher;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -77,21 +83,21 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
     private int count = 0;
 
     Toolbar myToolbar;
-
+    View menuItemView;
 
     float initX = 0;
     float initY = 0;
     float changeX = 0;
     float changeY = 0;
 
+    int number = 1;
 
+    MenuItem favButton;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.pdf_layout);
-        //resultTextView = (TextView)findViewById(R.id.textView);
-//        resultTextView.setOnTouchListener(this);
         PDFBoxResourceLoader.init(getApplicationContext());
         Intent intent = getIntent();
 
@@ -104,35 +110,32 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
         filePath = intent.getExtras().getString("fileName");
 //        viewPdf(fileName);
         extractText(filePath);
+        textswitcher.setText(sentences.get(0));
 
         myToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(myToolbar);
         getSupportActionBar().setTitle(null);
-        myToolbar.setBackgroundColor(Color.argb(50,50,50,50));
+        myToolbar.setBackgroundColor(Color.argb(50, 50, 50, 50));
 
         extractImage(filePath);
 
     }
 
-
+    //  Text switcher
     void init() {
         textswitcher = (TextSwitcher) findViewById(R.id.textSwitcher);
         next = (Button) findViewById(R.id.next);
         prev = (Button) findViewById(R.id.prev);
-
     }
-    void loadAnimations() {
 
+    void loadAnimations() {
         // Declare the in and out animations and initialize them
         in = AnimationUtils.loadAnimation(this,
                 android.R.anim.slide_in_left);
         out = AnimationUtils.loadAnimation(this,
                 android.R.anim.slide_out_right);
-
-        // set the animation type of textSwitcher
-//        textswitcher.setInAnimation(in);
-//        textswitcher.setOutAnimation(out);
     }
+
     // Set Factory for the textSwitcher *Compulsory part
     void setFactory() {
         textswitcher.setFactory(new ViewSwitcher.ViewFactory() {
@@ -152,14 +155,91 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.pdf_menu, menu) ;
+        //MenuInflater inflater = getMenuInflater();
+        getMenuInflater().inflate(R.menu.pdf_menu, menu);
+        //getMenuInflater().inflate(R.menu.menu_number_of_sentences, menu);
 
-        return true ;
+        return true;
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
-            case R.id.setting:
+        int id = item.getItemId();
+        switch (item.getItemId()) {
+            case R.id.setting_Font_size:
+                View v = findViewById(R.id.linearLayout2);
+                PopupMenu p = new PopupMenu(
+                        getApplicationContext(), // 현재 화면의 제어권자
+                        v); // anchor : 팝업을 띄울 기준될 위젯
+
+                getMenuInflater().inflate(R.menu.menu_font_size, p.getMenu());
+                // 이벤트 처리
+                p.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+//                        switch (item.getItemId()){
+//                            case R.id.sentence_one:
+//                                number = 1;
+//                                break;
+//                            case R.id.sentence_two:
+//                                number = 2;
+//                                break;
+//                            case R.id.sentence_three:
+//                                number = 3;
+//                                break;
+//                            case R.id.sentence_four:
+//                                number = 4;
+//                                break;
+//
+//                        }
+                        Toast.makeText(getApplicationContext(),
+                                "팝업메뉴 이벤트 처리 - "
+                                        + item.getTitle(),
+                                Toast.LENGTH_SHORT).show();
+                        return false;
+                    }
+                });
+                p.setGravity(Gravity.CENTER_HORIZONTAL);
+                p.show(); // 메뉴를 띄우기
+                Toast.makeText(this, "setting.", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.setting_number_of_sentences:
+                v = findViewById(R.id.linearLayout2);
+                p = new PopupMenu(
+                        getApplicationContext(), // 현재 화면의 제어권자
+                        v); // anchor : 팝업을 띄울 기준될 위젯
+
+                getMenuInflater().inflate(R.menu.menu_number_of_sentences, p.getMenu());
+                // 이벤트 처리
+                p.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        switch (item.getItemId()){
+                            case R.id.sentence_one:
+                                number = 1;
+                                break;
+                            case R.id.sentence_two:
+                                number = 2;
+                                break;
+                            case R.id.sentence_three:
+                                number = 3;
+                                break;
+                            case R.id.sentence_four:
+                                number = 4;
+                                break;
+
+                        }
+                        Toast.makeText(getApplicationContext(),
+                                "팝업메뉴 이벤트 처리 - "
+                                        + item.getTitle(),
+                                Toast.LENGTH_SHORT).show();
+                        return false;
+                    }
+                });
+                p.setGravity(Gravity.CENTER_HORIZONTAL);
+                p.show(); // 메뉴를 띄우기
+
+
                 Toast.makeText(this, "setting.", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.all_view:
@@ -173,23 +253,10 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
 
 
     }
-//    void setListener(){
-//        if(changeX - initX > 240){
-//            if (0 <= count && count < sentences.size()) {
-//                count--;
-//
-//
-//                if (count < 0)
-//                    count = 0;
-//                if (count > sentences.size())
-//                    count = sentences.size() - 1;
-//                resultTextView.setText(sentences.get(count));
-//            }
-//        }
-//        else if(initX - changeX > 240){
-//
-//        }
-//    }
+
+
+
+
     void setListener() {
         // ClickListener for NEXT button
         // When clicked on Button TextSwitcher will switch between texts
@@ -198,19 +265,31 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
         next.setOnClickListener(new View.OnClickListener() {
 
             public void onClick(View v) {
+
                 in = AnimationUtils.loadAnimation(PdfActivity.this,
                         R.anim.right_in);
                 out = AnimationUtils.loadAnimation(PdfActivity.this,
                         R.anim.left_out);
                 textswitcher.setInAnimation(in);
                 textswitcher.setOutAnimation(out);
+
                 if (0 <= count && count < sentences.size()) {
+
                     count++;
                     if (count < 0)
                         count = 0;
-                    if (count > sentences.size())
+                    if (count > sentences.size()-1)
                         count = sentences.size() - 1;
-                    textswitcher.setText(sentences.get(count).toString());
+                    if (count == sentences.size() - 1) {
+                        textswitcher.setInAnimation(null);
+                        textswitcher.setOutAnimation(null);
+                    }
+                    String set = "";
+                    for(int i = 0; i<number; i++){
+                        set += sentences.get(count);
+                        count++;
+                    }
+                    textswitcher.setText(set);
                     //count++;
                 }
             }
@@ -218,6 +297,7 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
         prev.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 in = AnimationUtils.loadAnimation(PdfActivity.this,
                         R.anim.left_in);
                 out = AnimationUtils.loadAnimation(PdfActivity.this,
@@ -225,22 +305,29 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
                 textswitcher.setInAnimation(in);
                 textswitcher.setOutAnimation(out);
 
+
                 if (0 <= count && count < sentences.size()) {
+
                     count--;
                     if (count < 0)
                         count = 0;
                     if (count >= sentences.size())
                         count = sentences.size() - 1;
-                    textswitcher.setText(sentences.get(count).toString());
+                    if (count == 0) {
+                        textswitcher.setInAnimation(null);
+                        textswitcher.setOutAnimation(null);
+                    }
+                    textswitcher.setText(sentences.get(count));
                 }
             }
         });
     }
+
     @Override
-    public boolean onTouch(View v, MotionEvent event){
+    public boolean onTouch(View v, MotionEvent event) {
         initX = event.getX();
         initY = event.getY();
-        switch (event.getAction()){
+        switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 initX = event.getX();
                 initY = event.getY();
@@ -254,8 +341,8 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
                 changeY = event.getY();
 
                 break;
-                default:
-                    return false;
+            default:
+                return false;
 
         }
 
@@ -278,16 +365,12 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
 
 
             //resultTextView.setText(sentences.get(0));
+            textswitcher.setText(sentences.get(0));
             document.close();
         } catch (Exception e) {
             //...
         }
     }
-
-
-
-
-
 
 
     private void parsing(String text) {
@@ -337,7 +420,7 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
                 } else
                     continue;
                 //직전 문장 == temp
-                temp = sentences.get(prev).toString();
+                temp = sentences.get(prev);
 
                 //직전 문장의 길이
                 len = temp.length();
@@ -366,7 +449,7 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
 //                    sentences.add("dot으로 끝남..");
 //                }
                 len = dot_str.length();
-                if(len > 1){
+                if (len > 1) {
                     if (dot_str.substring(len - 2, len).equals(". ") && (dot_str.length() < 25)) {
                         merge();
                     }
@@ -375,44 +458,43 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
 
                 //맨 앞글자 특수문자이면 그 앞이랑 합쳐줌
                 String special = sentences.get(sentences.size() - 1);
-                if(special.length()>0){
+                if (special.length() > 0) {
                     String check_spe = special.substring(0, 1);
-                    if(!check_spe.matches("[0-9|a-z|A-Z|ㄱ-ㅎ|ㅏ-ㅣ|가-힝]*")){
+                    if (!check_spe.matches("[0-9|a-z|A-Z|ㄱ-ㅎ|ㅏ-ㅣ|가-힝]*")) {
                         merge();
                     }
                 }
 
 
-
                 //년도 인지, 앞에 숫자 4개로 이루어져 있는지..
                 String number = sentences.get(sentences.size() - 1);
                 number = number.trim();
-                if(number.length()>3){
+                if (number.length() > 3) {
                     String num = number.substring(0, 4);
                     if (isNumber(num))
                         merge();
                 }
 
                 //전치사로 끝나고 끝에 .?!가 없을 때...
-                if(sentences.size()>1){
+                if (sentences.size() > 1) {
                     String str = sentences.get(sentences.size() - 2);
                     String[] array = str.split(" ");
                     String[] preposition = {"about", "above", "after", "against", "along", "around", "at", "beside", "beneath",
                             "between", "but", "by", "down", "during", "for", "from", "in", "into", "of", "off", "on", "out",
                             "over", "per", "round", "since", "through", "till", "to", "toward", "until", "up", "upon", "with",
                             "within", "without", "as"};
-                    if(array.length > 0){
+                    if (array.length > 0) {
                         //마지막 글자 : array[array.length - 1]
 
                         String temp_pre = array[array.length - 1].trim();
                         int len_pre = temp_pre.length();
-                        if(len_pre>0){
+                        if (len_pre > 0) {
                             String temp_pre_check = temp_pre.substring(len_pre - 1, len_pre);
-                            if(!(temp_pre_check.equals(".") || temp_pre_check.equals("?") || temp_pre_check.equals("!"))){
+                            if (!(temp_pre_check.equals(".") || temp_pre_check.equals("?") || temp_pre_check.equals("!"))) {
                                 temp_pre_check = temp_pre.substring(0, len_pre);
-                                for(int i = 0; i<preposition.length; i++){
+                                for (int i = 0; i < preposition.length; i++) {
                                     String tmp_lower = temp_pre_check.toLowerCase();
-                                    if(tmp_lower.equals(preposition[i])){
+                                    if (tmp_lower.equals(preposition[i])) {
                                         merge();
                                     }
                                 }
@@ -420,41 +502,25 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
                         }
 
                     }
-//                    else{
-//                        //한 문자 밖에 없을 때 확인 즉, array에 아무것도 안담길 때
-//                        String temp_pre = str.trim();
-//                        int len_pre = temp_pre.length();
-//                        if(len_pre>0){
-//                            String temp_pre_check = temp_pre.substring(len_pre - 1, len_pre);
-//                            if(!(temp_pre_check.equals(".") || temp_pre_check.equals("?") || temp_pre_check.equals("!"))){
-//                                temp_pre_check = temp_pre.substring(0, len_pre);
-//                                for(int i = 0; i<preposition.length; i++){
-//                                    String tmp_lower = temp_pre_check.toLowerCase();
-//                                    if(tmp_lower.equals(preposition[i])){
-//                                        merge();
-//                                    }
-//                                }
-//                            }
-//                        }
-//                    }
+
                 }
 
 //
                 //관사 체크
-                if(sentences.size() > 1){
+                if (sentences.size() > 1) {
                     String str_g = sentences.get(sentences.size() - 2);
                     String[] array_g = str_g.split(" ");
                     String[] article = {"a", "an", "the"};
-                    if(array_g.length>0){
+                    if (array_g.length > 0) {
                         String temp_g = array_g[array_g.length - 1].trim();
                         int len_g = temp_g.length();
-                        if(len_g > 0){
+                        if (len_g > 0) {
                             String temp_g_check = temp_g.substring(len_g - 1, len_g);
-                            if(!(temp_g_check.equals(".") || temp_g_check.equals("?") || temp_g_check.equals("!"))){
+                            if (!(temp_g_check.equals(".") || temp_g_check.equals("?") || temp_g_check.equals("!"))) {
                                 temp_g_check = temp_g.substring(0, len_g);
-                                for(int i = 0; i<article.length; i++){
+                                for (int i = 0; i < article.length; i++) {
                                     String tmp_lower = temp_g_check.toLowerCase();
-                                    if(tmp_lower.equals(article[i])){
+                                    if (tmp_lower.equals(article[i])) {
                                         merge();
                                     }
                                 }
@@ -465,28 +531,27 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
 
                 }
                 //맨 끝이 ,&:(로 끝나면 그 다음거랑 합쳐줌.
-                if(sentences.size() > 1){
-                    String str_g = sentences.get(sentences.size() - 2);
-                    str_g = str_g.trim();
-                    String end = str_g.substring(str_g.length()-1, str_g.length());
-                    if(end.equals(",")||end.equals("{")||end.equals("&")||end.equals(":")||end.equals("(")||end.equals("[")){
-                        merge();
+                if (sentences.size() > 1) {
+                    String temp_g = sentences.get(sentences.size() - 2).trim();
+                    int len_g = temp_g.length();
+                    if (len_g > 0) {
+                        String temp_g_check = temp_g.substring(len_g - 1, len_g);
+                        if (temp_g_check.equals(",") || temp_g_check.equals("{") || temp_g_check.equals("&") || temp_g_check.equals(":") || temp_g_check.equals("(") || temp_g_check.equals("[")) {
+                            merge();
+                        }
                     }
+
                 }
-
-
 
                 //reference를 만나면 그 뒤에 잘라버리기
                 //무조건 하나는 받고 시작하므로 size는 1이상임.
                 String reference = sentences.get(sentences.size() - 1);
                 reference = reference.trim();
                 reference = reference.toLowerCase();
-                if(reference.equals("references")){
+                if (reference.equals("references")) {
                     sentences.remove(sentences.size() - 1);
                     break;
                 }
-
-
 
 
             }
@@ -509,9 +574,10 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
 //            //
 //        }
     }
-    private void merge(){
-        String upper = sentences.get(sentences.size() - 1).toString();
-        String prev_str = sentences.get(sentences.size() - 2).toString();
+
+    private void merge() {
+        String upper = sentences.get(sentences.size() - 1);
+        String prev_str = sentences.get(sentences.size() - 2);
         String result = prev_str.concat(upper);
         sentences.remove(sentences.size() - 2);
         sentences.remove(sentences.size() - 1);
@@ -521,19 +587,19 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
     //문자열이 숫자(정수, 실수)인지 아닌지 판별한다.
     static boolean isNumber(String str) {
         char tempCh;
-        int dotCount = 0;	//실수일 경우 .의 개수를 체크하는 변수
+        int dotCount = 0;    //실수일 경우 .의 개수를 체크하는 변수
         boolean result = true;
 
-        for (int i=0; i<str.length(); i++){
-            tempCh= str.charAt(i);	//입력받은 문자열을 문자단위로 검사
+        for (int i = 0; i < str.length(); i++) {
+            tempCh = str.charAt(i);    //입력받은 문자열을 문자단위로 검사
             //아스키 코드 값이 48 ~ 57사이면 0과 9사이의 문자이다.
-            if ((int)tempCh < 48 || (int)tempCh > 57){
+            if ((int) tempCh < 48 || (int) tempCh > 57) {
                 //만약 0~9사이의 문자가 아닌 tempCh가 .도 아니거나
                 //.의 개수가 이미 1개 이상이라면 그 문자열은 숫자가 아니다.
-                if(tempCh!='.' || dotCount > 0){
+                if (tempCh != '.' || dotCount > 0) {
                     result = false;
                     break;
-                }else{
+                } else {
                     //.일 경우 .개수 증가
                     dotCount++;
                 }

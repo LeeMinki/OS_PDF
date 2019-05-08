@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/font_small"
+        android:title="작게"/>
+    <item
+        android:id="@+id/font_regular"
+        android:title="보통"/>
+    <item
+        android:id="@+id/font_large"
+        android:title="크게"/>
+
+</menu>
