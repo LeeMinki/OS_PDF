@@ -9,5 +9,4 @@
     <item
         android:id="@+id/font_large"
         android:title="크게"/>
-
 </menu>

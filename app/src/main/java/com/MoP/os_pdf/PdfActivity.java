@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
@@ -14,11 +15,13 @@ import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
@@ -28,6 +31,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupMenu;
+import android.widget.PopupWindow;
 import android.widget.TextSwitcher;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -68,8 +72,6 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
     private String filePath;
     private PDFTextStripper pdfStripper;
     private String text;
-    //private TextView resultTextView;
-
 
     List<String> sentences = new ArrayList<>();
 
@@ -83,7 +85,6 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
     private int count = 0;
 
     Toolbar myToolbar;
-    View menuItemView;
 
     float initX = 0;
     float initY = 0;
@@ -91,8 +92,6 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
     float changeY = 0;
 
     int number = 1;
-
-    MenuItem favButton;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -108,10 +107,8 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
         setListener();
 
         filePath = intent.getExtras().getString("fileName");
-//        viewPdf(fileName);
         extractText(filePath);
         textswitcher.setText(sentences.get(0));
-
         myToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(myToolbar);
         getSupportActionBar().setTitle(null);
@@ -155,20 +152,18 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        //MenuInflater inflater = getMenuInflater();
         getMenuInflater().inflate(R.menu.pdf_menu, menu);
-        //getMenuInflater().inflate(R.menu.menu_number_of_sentences, menu);
-
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
+        View v;
+        PopupMenu p;
         switch (item.getItemId()) {
             case R.id.setting_Font_size:
-                View v = findViewById(R.id.linearLayout2);
-                PopupMenu p = new PopupMenu(
+                v = findViewById(R.id.empty);
+                p = new PopupMenu(
                         getApplicationContext(), // 현재 화면의 제어권자
                         v); // anchor : 팝업을 띄울 기준될 위젯
 
@@ -177,44 +172,7 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
                 p.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
-//                        switch (item.getItemId()){
-//                            case R.id.sentence_one:
-//                                number = 1;
-//                                break;
-//                            case R.id.sentence_two:
-//                                number = 2;
-//                                break;
-//                            case R.id.sentence_three:
-//                                number = 3;
-//                                break;
-//                            case R.id.sentence_four:
-//                                number = 4;
-//                                break;
-//
-//                        }
-                        Toast.makeText(getApplicationContext(),
-                                "팝업메뉴 이벤트 처리 - "
-                                        + item.getTitle(),
-                                Toast.LENGTH_SHORT).show();
-                        return false;
-                    }
-                });
-                p.setGravity(Gravity.CENTER_HORIZONTAL);
-                p.show(); // 메뉴를 띄우기
-                Toast.makeText(this, "setting.", Toast.LENGTH_SHORT).show();
-                break;
-            case R.id.setting_number_of_sentences:
-                v = findViewById(R.id.linearLayout2);
-                p = new PopupMenu(
-                        getApplicationContext(), // 현재 화면의 제어권자
-                        v); // anchor : 팝업을 띄울 기준될 위젯
-
-                getMenuInflater().inflate(R.menu.menu_number_of_sentences, p.getMenu());
-                // 이벤트 처리
-                p.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-                        switch (item.getItemId()){
+                        switch (item.getItemId()) {
                             case R.id.sentence_one:
                                 number = 1;
                                 break;
@@ -227,7 +185,6 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
                             case R.id.sentence_four:
                                 number = 4;
                                 break;
-
                         }
                         Toast.makeText(getApplicationContext(),
                                 "팝업메뉴 이벤트 처리 - "
@@ -238,9 +195,41 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
                 });
                 p.setGravity(Gravity.CENTER_HORIZONTAL);
                 p.show(); // 메뉴를 띄우기
+                break;
 
-
-                Toast.makeText(this, "setting.", Toast.LENGTH_SHORT).show();
+            case R.id.setting_number_of_sentences:
+                v = findViewById(R.id.empty);
+                p = new PopupMenu(
+                        getApplicationContext(), // 현재 화면의 제어권자
+                        v); // anchor : 팝업을 띄울 기준될 위젯
+                getMenuInflater().inflate(R.menu.menu_number_of_sentences, p.getMenu());
+                // 이벤트 처리
+                p.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        switch (item.getItemId()) {
+                            case R.id.sentence_one:
+                                number = 1;
+                                pdfSlide(2);
+                                break;
+                            case R.id.sentence_two:
+                                number = 2;
+                                pdfSlide(2);
+                                break;
+                            case R.id.sentence_three:
+                                number = 3;
+                                pdfSlide(2);
+                                break;
+                            case R.id.sentence_four:
+                                number = 4;
+                                pdfSlide(2);
+                                break;
+                        }
+                        return false;
+                    }
+                });
+                p.setGravity(Gravity.CENTER_HORIZONTAL);
+                p.show(); // 메뉴를 띄우기
                 break;
             case R.id.all_view:
                 Intent intent = new Intent(PdfActivity.this, AllPdfActivity.class);
@@ -248,79 +237,64 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
                 startActivity(intent);
                 break;
         }
-
         return true;
-
-
     }
-
-
-
 
     void setListener() {
         // ClickListener for NEXT button
         // When clicked on Button TextSwitcher will switch between texts
         // The current Text will go OUT and next text will come in with
         // specified animation
-        next.setOnClickListener(new View.OnClickListener() {
-
-            public void onClick(View v) {
-
-                in = AnimationUtils.loadAnimation(PdfActivity.this,
-                        R.anim.right_in);
-                out = AnimationUtils.loadAnimation(PdfActivity.this,
-                        R.anim.left_out);
-                textswitcher.setInAnimation(in);
-                textswitcher.setOutAnimation(out);
-
-                if (0 <= count && count < sentences.size()) {
-
-                    count++;
-                    if (count < 0)
-                        count = 0;
-                    if (count > sentences.size()-1)
-                        count = sentences.size() - 1;
-                    if (count == sentences.size() - 1) {
-                        textswitcher.setInAnimation(null);
-                        textswitcher.setOutAnimation(null);
-                    }
-                    String set = "";
-                    for(int i = 0; i<number; i++){
-                        set += sentences.get(count);
-                        count++;
-                    }
-                    textswitcher.setText(set);
-                    //count++;
-                }
-            }
-        });
         prev.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                in = AnimationUtils.loadAnimation(PdfActivity.this,
-                        R.anim.left_in);
-                out = AnimationUtils.loadAnimation(PdfActivity.this,
-                        R.anim.right_out);
-                textswitcher.setInAnimation(in);
-                textswitcher.setOutAnimation(out);
-
-
-                if (0 <= count && count < sentences.size()) {
-
-                    count--;
-                    if (count < 0)
-                        count = 0;
-                    if (count >= sentences.size())
-                        count = sentences.size() - 1;
-                    if (count == 0) {
-                        textswitcher.setInAnimation(null);
-                        textswitcher.setOutAnimation(null);
-                    }
-                    textswitcher.setText(sentences.get(count));
-                }
+                pdfSlide(0);
             }
         });
+        next.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                pdfSlide(1);
+            }
+        });
+    }
+
+    private void pdfSlide(int mode) { // 0: prev, 1: next, 2: render
+        String set = "";
+        if (mode == 0 && count > 0) {
+            in = AnimationUtils.loadAnimation(PdfActivity.this,
+                    R.anim.left_in);
+            out = AnimationUtils.loadAnimation(PdfActivity.this,
+                    R.anim.right_out);
+            if (count - number >= 0)
+                count -= number;
+            else
+                count = -1;
+        } else if (mode == 1 && count < sentences.size() - 1) {
+            in = AnimationUtils.loadAnimation(PdfActivity.this,
+                    R.anim.right_in);
+            out = AnimationUtils.loadAnimation(PdfActivity.this,
+                    R.anim.left_out);
+            if (count + number < sentences.size())
+                count += number;
+            else
+                count = sentences.size();
+        } else {
+            in = null;
+            out = null;
+        }
+        Log.i("Test", "" + count);
+        if (count < 0) {
+            count = 0;
+        }
+        if (count >= sentences.size()) {
+            count = sentences.size() - 1;
+        }
+        for (int i = 0; (count + i) < sentences.size() && i < number; i++) {
+            set += sentences.get(count + i);
+        }
+        textswitcher.setInAnimation(in);
+        textswitcher.setOutAnimation(out);
+        textswitcher.setText(set);
     }
 
     @Override
@@ -345,12 +319,8 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
                 return false;
 
         }
-
-
         return true;
-
     }
-
 
     private void extractText(String pdfFilePath) {
         File file = new File(pdfFilePath);
@@ -372,10 +342,9 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
         }
     }
 
-
     private void parsing(String text) {
 
-//        //  정규 표현식으로 split
+//        // 정규 표현식으로 split
 //        String[] words = text.split("\\.\\r\\n|\\.\\r|\\.\\n|\\.\\n\\r|\\.\\s|\\r\\n|\\r|\\n|\\n\\r");
 //
 //        for (String wo : words ){
@@ -542,7 +511,6 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
                     }
 
                 }
-
                 //reference를 만나면 그 뒤에 잘라버리기
                 //무조건 하나는 받고 시작하므로 size는 1이상임.
                 String reference = sentences.get(sentences.size() - 1);
@@ -556,7 +524,6 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
 
             }
         }
-
 
         //opennlp 사용하기
 //        try {
@@ -608,6 +575,7 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
         return result;
     }
 
+    // 이미지 추출
     private void extractImage(String pdfFilePath) {
         LinearLayout layout = (LinearLayout) findViewById(R.id.linearLayout);
         try {
