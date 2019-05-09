@@ -28,6 +28,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageSwitcher;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -75,16 +76,21 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
     private String text;
 
     List<String> sentences = new ArrayList<>();
+    List<Bitmap> images = new ArrayList<>();
 
     private static Button next;
     private static Button prev;
+    private static Button nextImg;
+    private static Button prevImg;
     private static TextSwitcher textswitcher;
+    private static ImageSwitcher imageswitcher;
     private static TextView myText;
     Animation in;
     Animation out;
 
     BreakIterator iterator = BreakIterator.getSentenceInstance(Locale.US);
     private int count = 0;
+    private int imgCount = 0;
 
     Toolbar myToolbar;
 
@@ -95,46 +101,50 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
 
     int number = 1;
     int fontSize = 30;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.pdf_layout);
         PDFBoxResourceLoader.init(getApplicationContext());
         Intent intent = getIntent();
-
-        // Call all the methods
-        init();
-
         filePath = intent.getExtras().getString("fileName");
-        extractText(filePath);
-        textswitcher.setText(sentences.get(0));
-        myToolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(myToolbar);
-        getSupportActionBar().setTitle(null);
-        myToolbar.setBackgroundColor(Color.argb(50, 50, 50, 50));
-
-        extractImage(filePath);
-
+        init();
     }
 
     //  Text switcher
     void init() {
         textswitcher = (TextSwitcher) findViewById(R.id.textSwitcher);
+        imageswitcher = (ImageSwitcher) findViewById(R.id.imgSwitcher);
         next = (Button) findViewById(R.id.next);
         prev = (Button) findViewById(R.id.prev);
+        nextImg = (Button) findViewById(R.id.nextImage);
+        prevImg = (Button) findViewById(R.id.prevImage);
+
         in = AnimationUtils.loadAnimation(this,
                 android.R.anim.slide_in_left);
         out = AnimationUtils.loadAnimation(this,
                 android.R.anim.slide_out_right);
+
         prev.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                pdfSlide(0);
+                pdfSlide(0, true);
             }
         });
         next.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                pdfSlide(1);
+                pdfSlide(1, true);
+            }
+        });
+        prevImg.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                pdfSlide(0, false);
+            }
+        });
+        nextImg.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                pdfSlide(1, false);
             }
         });
 
@@ -148,6 +158,23 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
                 return myText;
             }
         });
+
+        imageswitcher.setFactory(new ViewSwitcher.ViewFactory() {
+            public View makeView() {
+                ImageView imageView = new ImageView(getApplicationContext());
+                imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                imageView.setLayoutParams(new ImageSwitcher.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
+                return imageView;
+            }
+        });
+        myToolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(myToolbar);
+        getSupportActionBar().setTitle(null);
+        myToolbar.setBackgroundColor(Color.argb(50, 50, 50, 50));
+        extractText(filePath);
+        textswitcher.setText(sentences.get(0));
+        extractImage(filePath);
+        imageswitcher.setImageDrawable(new BitmapDrawable(getResources(), images.get(0)));
     }
 
     @Override
@@ -175,15 +202,15 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
                         switch (item.getItemId()) {
                             case R.id.font_small:
                                 fontSize = 20;
-                                pdfSlide(2);
+                                pdfSlide(2, true);
                                 break;
                             case R.id.font_regular:
                                 fontSize = 30;
-                                pdfSlide(2);
+                                pdfSlide(2, true);
                                 break;
                             case R.id.font_large:
                                 fontSize = 40;
-                                pdfSlide(2);
+                                pdfSlide(2, true);
                                 break;
                         }
                         return false;
@@ -206,19 +233,19 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
                         switch (item.getItemId()) {
                             case R.id.sentence_one:
                                 number = 1;
-                                pdfSlide(2);
+                                pdfSlide(2, true);
                                 break;
                             case R.id.sentence_two:
                                 number = 2;
-                                pdfSlide(2);
+                                pdfSlide(2, true);
                                 break;
                             case R.id.sentence_three:
                                 number = 3;
-                                pdfSlide(2);
+                                pdfSlide(2, true);
                                 break;
                             case R.id.sentence_four:
                                 number = 4;
-                                pdfSlide(2);
+                                pdfSlide(2, true);
                                 break;
                         }
                         return false;
@@ -236,47 +263,63 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
         return true;
     }
 
-    private void pdfSlide(int mode) { // 0: prev, 1: next, 2: render
+    private void pdfSlide(int mode, Boolean isText) { // 0: prev, 1: next, 2: render
+        int localCount, localSize;
         String set = "";
-
-        if (mode == 0 && count > 0) {
+        if (isText) {
+            localCount = count;
+            localSize = sentences.size();
+        } else {
+            localCount = imgCount;
+            localSize = images.size();
+        }
+        if (mode == 0 && localCount > 0) {
             in = AnimationUtils.loadAnimation(PdfActivity.this,
                     R.anim.left_in);
             out = AnimationUtils.loadAnimation(PdfActivity.this,
                     R.anim.right_out);
-            if (count - number >= 0)
-                count -= number;
+            if (localCount - number >= 0)
+                localCount -= number;
             else
-                count = -1;
-        } else if (mode == 1 && count < sentences.size() - 1) {
+                localCount = -1;
+        } else if (mode == 1 && localCount < localSize - 1) {
             in = AnimationUtils.loadAnimation(PdfActivity.this,
                     R.anim.right_in);
             out = AnimationUtils.loadAnimation(PdfActivity.this,
                     R.anim.left_out);
-            if (count + number < sentences.size())
-                count += number;
-            else
-                count = sentences.size();
+            if (localCount + number < localSize)
+                localCount += number;
+            else {
+                localCount = localSize;
+            }
         } else {
             in = null;
             out = null;
         }
-        Log.i("Test", "count: " + count);
+        Log.i("Test", "count: " + localCount);
         Log.i("Test", "font: " + fontSize);
         Log.i("Test", "mode: " + mode);
-        if (count < 0) {
-            count = 0;
+        if (localCount < 0) {
+            localCount = 0;
         }
-        if (count >= sentences.size()) {
-            count = sentences.size() - 1;
+        if (localCount >= localSize) {
+            localCount = localSize - 1;
         }
-        for (int i = 0; (count + i) < sentences.size() && i < number; i++) {
-            set += sentences.get(count + i);
+        if (isText) {
+            for (int i = 0; (localCount + i) < sentences.size() && i < number; i++) {
+                set += sentences.get(localCount + i);
+            }
+            textswitcher.setInAnimation(in);
+            textswitcher.setOutAnimation(out);
+            textswitcher.setText(set);
+            myText.setTextSize(fontSize);
+            count = localCount;
+        } else {
+            imageswitcher.setInAnimation(in);
+            imageswitcher.setOutAnimation(out);
+            imageswitcher.setImageDrawable(new BitmapDrawable(getResources(), images.get(localCount)));
+            imgCount = localCount;
         }
-        textswitcher.setInAnimation(in);
-        textswitcher.setOutAnimation(out);
-        textswitcher.setText(set);
-        myText.setTextSize(fontSize);
     }
 
     @Override
@@ -309,13 +352,8 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
         try {
             PDDocument document = PDDocument.load(file);
             pdfStripper = new PDFTextStripper();
-            //resultTextView = findViewById(R.id.textView);
             text = pdfStripper.getText(document);
-
-            //.setMovementMethod(ScrollingMovementMethod.getInstance());
             parsing(text);
-
-            //resultTextView.setText(sentences.get(0));
             textswitcher.setText(sentences.get(0));
             document.close();
         } catch (Exception e) {
@@ -346,7 +384,6 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
 
             if (lastIndex != BreakIterator.DONE) {
 
-
                 //한 문장씩 끊어줌
                 String sentence = text.substring(firstIndex, lastIndex);
                 int prev = 1;
@@ -363,7 +400,7 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
                 //문장을 일단 추가함.
                 sentences.add(sentence);
 
-                //지금 추가한 것의 전 문장의 index와 지금 문장의 index값을 저장
+                //지금 추가한 것의 전 문장의 index와 지금 문장의 index 값을 저장
                 if (sentences.size() > 1) {
                     prev = sentences.size() - 2;
                     now = sentences.size() - 1;
@@ -376,7 +413,6 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
                 len = temp.length();
                 //전 문장이 -으로 끝났는 지 확인하기 위해서
 
-
                 if (len > 2)
                     comp = temp.substring(len - 2, len);
 
@@ -387,13 +423,13 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
                     sentences.add(result);
                 }
 
-                //멘 앞 글자가 소문자이면 그 앞에 것과 합쳐줌
+                //맨 앞 글자가 소문자이면 그 앞에 것과 합쳐줌
                 char check_lower = sentences.get(sentences.size() - 1).charAt(0);
                 if (Character.isLowerCase(check_lower) && sentences.size() > 1) {
                     merge();
                 }
 
-                // 지금 글자 수가 적고 끝이 .으로 끝나면.
+                // 지금 글자 수가 적고 끝이 .으로 끝나면
                 String dot_str = sentences.get(sentences.size() - 1);
 //                if(len > 0 && dot_str.substring(len - 1, len).equals(". ")){
 //                    sentences.add("dot으로 끝남..");
@@ -405,8 +441,7 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
                     }
                 }
 
-
-                //맨 앞글자 특수문자이면 그 앞이랑 합쳐줌
+                //맨 앞 글자 특수문자이면 그 앞이랑 합쳐줌
                 String special = sentences.get(sentences.size() - 1);
                 if (special.length() > 0) {
                     String check_spe = special.substring(0, 1);
@@ -415,8 +450,7 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
                     }
                 }
 
-
-                //년도 인지, 앞에 숫자 4개로 이루어져 있는지..
+                //연도 인지, 앞에 숫자 4개로 이루어져 있는지..
                 String number = sentences.get(sentences.size() - 1);
                 number = number.trim();
                 if (number.length() > 3) {
@@ -452,10 +486,7 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
                         }
 
                     }
-
                 }
-
-//
                 //관사 체크
                 if (sentences.size() > 1) {
                     String str_g = sentences.get(sentences.size() - 2);
@@ -476,9 +507,7 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
                                 }
                             }
                         }
-
                     }
-
                 }
                 //맨 끝이 ,&:(로 끝나면 그 다음거랑 합쳐줌.
                 if (sentences.size() > 1) {
@@ -490,7 +519,6 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
                             merge();
                         }
                     }
-
                 }
                 //reference를 만나면 그 뒤에 잘라버리기
                 //무조건 하나는 받고 시작하므로 size는 1이상임.
@@ -501,8 +529,6 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
                     sentences.remove(sentences.size() - 1);
                     break;
                 }
-
-
             }
         }
 
@@ -558,7 +584,6 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
 
     // 이미지 추출
     private void extractImage(String pdfFilePath) {
-        LinearLayout layout = (LinearLayout) findViewById(R.id.linearLayout);
         try {
             File file = new File(pdfFilePath);
             PDDocument document = PDDocument.load(file);
@@ -569,15 +594,10 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
                     PDXObject o = pdResources.getXObject(name);
                     if (o instanceof PDImageXObject) {
                         PDImageXObject pdfImage = (PDImageXObject) o;
-                        Bitmap image = pdfImage.getImage();
-                        ImageView iv = new ImageView(this);
-                        iv.setImageBitmap(image);
-                        iv.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
-                        layout.addView(iv);
+                        images.add(pdfImage.getImage());
                     }
                 }
             }
-
         } catch (IOException e) {
             System.err.println("Exception while trying to create pdf document - " + e);
         }
