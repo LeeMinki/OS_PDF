@@ -21,6 +21,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -78,6 +79,7 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
     private static Button next;
     private static Button prev;
     private static TextSwitcher textswitcher;
+    private static TextView myText;
     Animation in;
     Animation out;
 
@@ -92,7 +94,7 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
     float changeY = 0;
 
     int number = 1;
-
+    int fontSize = 30;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -102,9 +104,6 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
 
         // Call all the methods
         init();
-        loadAnimations();
-        setFactory();
-        setListener();
 
         filePath = intent.getExtras().getString("fileName");
         extractText(filePath);
@@ -123,31 +122,32 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
         textswitcher = (TextSwitcher) findViewById(R.id.textSwitcher);
         next = (Button) findViewById(R.id.next);
         prev = (Button) findViewById(R.id.prev);
-    }
-
-    void loadAnimations() {
-        // Declare the in and out animations and initialize them
         in = AnimationUtils.loadAnimation(this,
                 android.R.anim.slide_in_left);
         out = AnimationUtils.loadAnimation(this,
                 android.R.anim.slide_out_right);
-    }
-
-    // Set Factory for the textSwitcher *Compulsory part
-    void setFactory() {
-        textswitcher.setFactory(new ViewSwitcher.ViewFactory() {
-
-            public View makeView() {
-
-                // Create run time textView with some attributes like gravity,
-                // color, etc.
-                TextView myText = new TextView(PdfActivity.this);
-                myText.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL);
-                myText.setTextSize(30);
-                return myText;
+        prev.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                pdfSlide(0);
+            }
+        });
+        next.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                pdfSlide(1);
             }
         });
 
+        textswitcher.setFactory(new ViewSwitcher.ViewFactory() {
+            @Override
+            public View makeView() {
+                myText = new TextView(PdfActivity.this);
+                myText.setTextColor(Color.BLACK);
+                myText.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL);
+                myText.setTextSize(fontSize);
+                return myText;
+            }
+        });
     }
 
     @Override
@@ -173,23 +173,19 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
                         switch (item.getItemId()) {
-                            case R.id.sentence_one:
-                                number = 1;
+                            case R.id.font_small:
+                                fontSize = 20;
+                                pdfSlide(2);
                                 break;
-                            case R.id.sentence_two:
-                                number = 2;
+                            case R.id.font_regular:
+                                fontSize = 30;
+                                pdfSlide(2);
                                 break;
-                            case R.id.sentence_three:
-                                number = 3;
-                                break;
-                            case R.id.sentence_four:
-                                number = 4;
+                            case R.id.font_large:
+                                fontSize = 40;
+                                pdfSlide(2);
                                 break;
                         }
-                        Toast.makeText(getApplicationContext(),
-                                "팝업메뉴 이벤트 처리 - "
-                                        + item.getTitle(),
-                                Toast.LENGTH_SHORT).show();
                         return false;
                     }
                 });
@@ -240,26 +236,9 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
         return true;
     }
 
-    void setListener() {
-        // ClickListener for NEXT button
-        // When clicked on Button TextSwitcher will switch between texts
-        // The current Text will go OUT and next text will come in with
-        // specified animation
-        prev.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                pdfSlide(0);
-            }
-        });
-        next.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                pdfSlide(1);
-            }
-        });
-    }
-
     private void pdfSlide(int mode) { // 0: prev, 1: next, 2: render
         String set = "";
+
         if (mode == 0 && count > 0) {
             in = AnimationUtils.loadAnimation(PdfActivity.this,
                     R.anim.left_in);
@@ -282,7 +261,9 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
             in = null;
             out = null;
         }
-        Log.i("Test", "" + count);
+        Log.i("Test", "count: " + count);
+        Log.i("Test", "font: " + fontSize);
+        Log.i("Test", "mode: " + mode);
         if (count < 0) {
             count = 0;
         }
@@ -295,6 +276,7 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
         textswitcher.setInAnimation(in);
         textswitcher.setOutAnimation(out);
         textswitcher.setText(set);
+        myText.setTextSize(fontSize);
     }
 
     @Override
@@ -332,7 +314,6 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
 
             //.setMovementMethod(ScrollingMovementMethod.getInstance());
             parsing(text);
-
 
             //resultTextView.setText(sentences.get(0));
             textswitcher.setText(sentences.get(0));
