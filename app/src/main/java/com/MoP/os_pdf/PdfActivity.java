@@ -82,7 +82,7 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
     private static Button prev;
     private static Button nextImg;
     private static Button prevImg;
-    private static TextSwitcher textswitcher;
+    public static TextSwitcher textswitcher;
     private static ImageSwitcher imageswitcher;
     private static TextView myText;
     Animation in;
@@ -98,7 +98,7 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
     float initY = 0;
     float changeX = 0;
     float changeY = 0;
-
+    NaverTranslateTask asyncTask;
     int number = 1;
     int fontSize = 30;
 
@@ -129,22 +129,22 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
         prev.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                pdfSlide(0, true);
+                pdfSlide(0, true, false);
             }
         });
         next.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                pdfSlide(1, true);
+                pdfSlide(1, true, false);
             }
         });
         prevImg.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                pdfSlide(0, false);
+                pdfSlide(0, false, false);
             }
         });
         nextImg.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                pdfSlide(1, false);
+                pdfSlide(1, false, false);
             }
         });
 
@@ -172,9 +172,11 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
         getSupportActionBar().setTitle(null);
         myToolbar.setBackgroundColor(Color.argb(50, 50, 50, 50));
         extractText(filePath);
-        textswitcher.setText(sentences.get(0));
+        if(sentences.size() != 0)
+            textswitcher.setText(sentences.get(0));
         extractImage(filePath);
-        imageswitcher.setImageDrawable(new BitmapDrawable(getResources(), images.get(0)));
+        if(images.size() != 0)
+            imageswitcher.setImageDrawable(new BitmapDrawable(getResources(), images.get(0)));
     }
 
     @Override
@@ -202,15 +204,15 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
                         switch (item.getItemId()) {
                             case R.id.font_small:
                                 fontSize = 20;
-                                pdfSlide(2, true);
+                                pdfSlide(2, true, false);
                                 break;
                             case R.id.font_regular:
                                 fontSize = 30;
-                                pdfSlide(2, true);
+                                pdfSlide(2, true, false);
                                 break;
                             case R.id.font_large:
                                 fontSize = 40;
-                                pdfSlide(2, true);
+                                pdfSlide(2, true, false);
                                 break;
                         }
                         return false;
@@ -233,19 +235,19 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
                         switch (item.getItemId()) {
                             case R.id.sentence_one:
                                 number = 1;
-                                pdfSlide(2, true);
+                                pdfSlide(2, true, false);
                                 break;
                             case R.id.sentence_two:
                                 number = 2;
-                                pdfSlide(2, true);
+                                pdfSlide(2, true, false);
                                 break;
                             case R.id.sentence_three:
                                 number = 3;
-                                pdfSlide(2, true);
+                                pdfSlide(2, true, false);
                                 break;
                             case R.id.sentence_four:
                                 number = 4;
-                                pdfSlide(2, true);
+                                pdfSlide(2, true, false);
                                 break;
                         }
                         return false;
@@ -253,6 +255,9 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
                 });
                 p.setGravity(Gravity.CENTER_HORIZONTAL);
                 p.show(); // 메뉴를 띄우기
+                break;
+            case R.id.setting_translation:
+                pdfSlide(2, true, true);
                 break;
             case R.id.all_view:
                 Intent intent = new Intent(PdfActivity.this, AllPdfActivity.class);
@@ -263,9 +268,13 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
         return true;
     }
 
-    private void pdfSlide(int mode, Boolean isText) { // 0: prev, 1: next, 2: render
+    private void pdfSlide(int mode, Boolean isText, Boolean translation) { // 0: prev, 1: next, 2: render
         int localCount, localSize;
         String set = "";
+        if(isText && sentences.size() == 0)
+            return;
+        if(!isText && images.size() == 0)
+            return;
         if (isText) {
             localCount = count;
             localSize = sentences.size();
@@ -307,7 +316,11 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
         }
         if (isText) {
             for (int i = 0; (localCount + i) < sentences.size() && i < number; i++) {
-                set += sentences.get(localCount + i);
+                set += sentences.get(localCount + i) +"\n\n";
+            }
+            if(translation == true) {
+                asyncTask = new NaverTranslateTask();
+                asyncTask.execute(set);
             }
             textswitcher.setInAnimation(in);
             textswitcher.setOutAnimation(out);
