@@ -1,6 +1,7 @@
 package com.MoP.os_pdf;
 
 import android.app.Activity;
+import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -10,6 +11,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
@@ -105,6 +107,10 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Intent intent2 = new Intent(PdfActivity.this, LoadingActivity.class);
+        startActivity(intent2);
+
         setContentView(R.layout.pdf_layout);
         PDFBoxResourceLoader.init(getApplicationContext());
         Intent intent = getIntent();
@@ -155,6 +161,10 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
                 myText.setTextColor(Color.BLACK);
                 myText.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL);
                 myText.setTextSize(fontSize);
+                myText.setEnabled(true);
+                myText.setTextIsSelectable(true);
+                myText.setFocusable(true);
+                myText.setLongClickable(true);
                 return myText;
             }
         });
@@ -264,6 +274,28 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
                 intent.putExtra("fileName", filePath);
                 startActivity(intent);
                 break;
+            case R.id.action_search:
+                MenuItem mSearch = item;
+                SearchView mSearchView = (SearchView) mSearch.getActionView();
+                mSearchView.setQueryHint("Search");
+
+                mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener(){
+
+                    @Override
+                    public boolean onQueryTextSubmit(String s) {
+//                        검색어 입력시 : onQueryTextChange
+//                        검색어 완료시 : onQueryTextSubmit
+                        Intent intent = new Intent(Intent.ACTION_WEB_SEARCH);
+                        intent.putExtra(SearchManager.QUERY, s);
+                        startActivity(intent);
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onQueryTextChange(String s) {
+                        return false;
+                    }
+                });
         }
         return true;
     }

@@ -1,6 +1,7 @@
 package com.MoP.os_pdf;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -30,7 +31,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
     private static final int MY_PERMISSION_STORAGE = 1111;
     private static final int MY_PERMISSION_INTERNET = 2222;
-    private String mFileName;
+    public String mFileName;
     private ListView lvFileControl;
     private Context mContext = this;
 
@@ -63,12 +64,18 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     mFileName = file.getAbsolutePath();
                     Log.i("Test", "Touch File Name:" + mFileName);
+
                     Intent intent = new Intent(MainActivity.this, PdfActivity.class);
                     intent.putExtra("fileName", mFileName);
                     startActivity(intent);
+
+
                 }
             }
         });
+    }
+    public String getter(){
+        return mFileName;
     }
 
     private void getDir(String dirPath) {
