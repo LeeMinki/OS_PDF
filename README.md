@@ -3,6 +3,6 @@ Mobile Programming Project
 
 # Demo
 
-![GIF](https://user-images.githubusercontent.com/28076542/57831137-3ca75880-77ef-11e9-98b4-70f8fab6426b.gif)
+![GIF](https://user-images.githubusercontent.com/28076542/57831506-4bdad600-77f0-11e9-9276-15ecbd29a47a.gif)
 
 ## To Be Continue....
