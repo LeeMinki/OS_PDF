@@ -366,14 +366,39 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
             PDDocument document = PDDocument.load(file);
             pdfStripper = new PDFTextStripper();
             text = pdfStripper.getText(document);
-            parsing(text);
+            if(text.substring(0,30).matches(".*[ㄱ-ㅎㅏ-ㅣ가-힣]+.*")) {
+// 한글이 포함된 문자열
+                parsing_korean(text);
+            } else {
+// 영어
+                parsing(text);
+            }
+
             textswitcher.setText(sentences.get(0));
             document.close();
         } catch (Exception e) {
             //...
         }
     }
+    private void parsing_korean(String text){
+        //opennlp 사용하기
+        try {
+            //Toast.makeText(getApplicationContext(), "한글", Toast.LENGTH_LONG).show();
+            InputStream inputStream = getAssets().open("en-sent.bin");
+            SentenceModel model = new SentenceModel(inputStream);
 
+            //Instantiating the SentenceDetectorME class
+            SentenceDetectorME detector = new SentenceDetectorME(model);
+
+            //Detecting the sentence
+            String sentencesArray[] = detector.sentDetect(text);
+            sentences = Arrays.asList(sentencesArray);
+
+        } catch (Exception e) {
+            //
+        }
+
+    }
     private void parsing(String text) {
 
 //        // 정규 표현식으로 split
