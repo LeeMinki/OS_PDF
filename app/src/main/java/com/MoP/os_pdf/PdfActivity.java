@@ -87,6 +87,10 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
     public static TextSwitcher textswitcher;
     private static ImageSwitcher imageswitcher;
     private static TextView myText;
+
+    Button translate;
+    Boolean trans = true;
+
     Animation in;
     Animation out;
 
@@ -104,6 +108,8 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
     int number = 1;
     int fontSize = 30;
 
+
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -115,6 +121,26 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
         PDFBoxResourceLoader.init(getApplicationContext());
         Intent intent = getIntent();
         filePath = intent.getExtras().getString("fileName");
+        fontSize = intent.getExtras().getInt("fontSize");
+
+        translate = (Button)findViewById(R.id.trans_button);
+        translate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(trans == true){
+                    pdfSlide(2, true, true);
+                    translate.setText("원본보기");
+                    trans = false;
+                }
+                else if(trans == false){
+                    pdfSlide(2, true, false);
+                    translate.setText("TRANSLATE");
+                    trans = true;
+                }
+
+
+            }
+        });
         init();
     }
 
@@ -136,11 +162,19 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
             @Override
             public void onClick(View v) {
                 pdfSlide(0, true, false);
+                if(trans == false){
+                    translate.setText("TRANSLATE");
+                    trans = true;
+                }
             }
         });
         next.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 pdfSlide(1, true, false);
+                if(trans == false){
+                    translate.setText("TRANSLATE");
+                    trans = true;
+                }
             }
         });
         prevImg.setOnClickListener(new View.OnClickListener() {
@@ -172,6 +206,8 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
         imageswitcher.setFactory(new ViewSwitcher.ViewFactory() {
             public View makeView() {
                 ImageView imageView = new ImageView(getApplicationContext());
+//                ImageView.
+//                        setGravity(Gravity.TOP | Gravity.CENTER_VERTICAL);
                 imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
                 imageView.setLayoutParams(new ImageSwitcher.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
                 return imageView;
@@ -200,37 +236,37 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
         View v;
         PopupMenu p;
         switch (item.getItemId()) {
-            case R.id.setting_Font_size:
-                v = findViewById(R.id.empty);
-                p = new PopupMenu(
-                        getApplicationContext(), // 현재 화면의 제어권자
-                        v); // anchor : 팝업을 띄울 기준될 위젯
-
-                getMenuInflater().inflate(R.menu.menu_font_size, p.getMenu());
-                // 이벤트 처리
-                p.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-                        switch (item.getItemId()) {
-                            case R.id.font_small:
-                                fontSize = 20;
-                                pdfSlide(2, true, false);
-                                break;
-                            case R.id.font_regular:
-                                fontSize = 30;
-                                pdfSlide(2, true, false);
-                                break;
-                            case R.id.font_large:
-                                fontSize = 40;
-                                pdfSlide(2, true, false);
-                                break;
-                        }
-                        return false;
-                    }
-                });
-                p.setGravity(Gravity.CENTER_HORIZONTAL);
-                p.show(); // 메뉴를 띄우기
-                break;
+//            case R.id.setting_Font_size:
+//                v = findViewById(R.id.empty);
+//                p = new PopupMenu(
+//                        getApplicationContext(), // 현재 화면의 제어권자
+//                        v); // anchor : 팝업을 띄울 기준될 위젯
+//
+//                getMenuInflater().inflate(R.menu.menu_font_size, p.getMenu());
+//                // 이벤트 처리
+//                p.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+//                    @Override
+//                    public boolean onMenuItemClick(MenuItem item) {
+//                        switch (item.getItemId()) {
+//                            case R.id.font_small:
+//                                fontSize = 20;
+//                                pdfSlide(2, true, false);
+//                                break;
+//                            case R.id.font_regular:
+//                                fontSize = 30;
+//                                pdfSlide(2, true, false);
+//                                break;
+//                            case R.id.font_large:
+//                                fontSize = 40;
+//                                pdfSlide(2, true, false);
+//                                break;
+//                        }
+//                        return false;
+//                    }
+//                });
+//                p.setGravity(Gravity.CENTER_HORIZONTAL);
+//                p.show(); // 메뉴를 띄우기
+//                break;
 
             case R.id.setting_number_of_sentences:
                 v = findViewById(R.id.empty);
@@ -266,9 +302,9 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
                 p.setGravity(Gravity.CENTER_HORIZONTAL);
                 p.show(); // 메뉴를 띄우기
                 break;
-            case R.id.setting_translation:
-                pdfSlide(2, true, true);
-                break;
+//            case R.id.setting_translation:
+//                pdfSlide(2, true, true);
+//                break;
             case R.id.all_view:
                 Intent intent = new Intent(PdfActivity.this, AllPdfActivity.class);
                 intent.putExtra("fileName", filePath);
@@ -303,6 +339,7 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
     private void pdfSlide(int mode, Boolean isText, Boolean translation) { // 0: prev, 1: next, 2: render
         int localCount, localSize;
         String set = "";
+
         if(isText && sentences.size() == 0)
             return;
         if(!isText && images.size() == 0)
@@ -324,6 +361,7 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
             else
                 localCount = -1;
         } else if (mode == 1 && localCount < localSize - 1) {
+
             in = AnimationUtils.loadAnimation(PdfActivity.this,
                     R.anim.right_in);
             out = AnimationUtils.loadAnimation(PdfActivity.this,
@@ -353,12 +391,26 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
             if(translation == true) {
                 asyncTask = new NaverTranslateTask();
                 asyncTask.execute(set);
+                //번역된 set
+//                TextView translateView = (TextView)findViewById(R.id.trans_view);
+//                Button pre_img = (Button)findViewById(R.id.prevImage);
+//                pre_img.setVisibility(View.GONE);
+//                Button next_img = (Button)findViewById(R.id.nextImage);
+//                next_img.setVisibility(View.GONE);
+//                ImageSwitcher img = (ImageSwitcher)findViewById(R.id.imgSwitcher);
+//                img.setVisibility(View.GONE);
+//                translateView.setVisibility(View.VISIBLE);
+//                translateView.setText(set);
             }
+           // set = set.replaceAll(System.getProperty("line.separator"), " ");
+
             textswitcher.setInAnimation(in);
             textswitcher.setOutAnimation(out);
             textswitcher.setText(set);
-            myText.setTextSize(fontSize);
             count = localCount;
+            myText.setText(myText.getText());
+
+
         } else {
             imageswitcher.setInAnimation(in);
             imageswitcher.setOutAnimation(out);

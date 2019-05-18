@@ -2,6 +2,7 @@ package com.MoP.os_pdf;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -19,6 +20,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -64,16 +66,58 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     mFileName = file.getAbsolutePath();
                     Log.i("Test", "Touch File Name:" + mFileName);
+                    showDialog(1);
 
-                    Intent intent = new Intent(MainActivity.this, PdfActivity.class);
-                    intent.putExtra("fileName", mFileName);
-                    startActivity(intent);
+
 
 
                 }
             }
         });
     }
+    @Override
+    protected Dialog onCreateDialog(int id) {
+        // TODO Auto-generated method stub
+        final String [] items = {"작게", "보통", "크게"};
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setTitle("글자크기 선택");
+
+        builder.setSingleChoiceItems(items, 0, new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // TODO Auto-generated method stub
+                if(items[which] == "작게"){
+                    dialog.dismiss();
+                    Intent intent = new Intent(MainActivity.this, PdfActivity.class);
+                    intent.putExtra("fileName", mFileName);
+                    intent.putExtra("fontSize", 15);
+                    startActivity(intent);
+                }
+                if(items[which] == "보통"){
+                    dialog.dismiss();
+                    Intent intent = new Intent(MainActivity.this, PdfActivity.class);
+                    intent.putExtra("fileName", mFileName);
+                    intent.putExtra("fontSize", 30);
+                    startActivity(intent);
+                }
+                if(items[which] == "크게"){
+                    dialog.dismiss();
+                    Intent intent = new Intent(MainActivity.this, PdfActivity.class);
+                    intent.putExtra("fileName", mFileName);
+                    intent.putExtra("fontSize", 45);
+                    startActivity(intent);
+                }
+                dialog.dismiss(); // 누르면 바로 닫히는 형태
+            }
+        });
+        return builder.create();
+    }
+
+
+
+
+
     public String getter(){
         return mFileName;
     }
