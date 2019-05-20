@@ -77,7 +77,7 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
     private PDFTextStripper pdfStripper;
     private String text;
 
-    List<String> sentences = new ArrayList<>();
+    public List<String> sentences = new ArrayList<>();
     List<Bitmap> images = new ArrayList<>();
 
     private static Button next;
@@ -95,7 +95,7 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
     Animation out;
 
     BreakIterator iterator = BreakIterator.getSentenceInstance(Locale.US);
-    private int count = 0;
+    public int count = 0;
     private int imgCount = 0;
 
     Toolbar myToolbar;
@@ -306,8 +306,12 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
 //                pdfSlide(2, true, true);
 //                break;
             case R.id.all_view:
+                Log.i("Test", " " + sentences.size() + "   " + count);
                 Intent intent = new Intent(PdfActivity.this, AllPdfActivity.class);
                 intent.putExtra("fileName", filePath);
+                intent.putExtra("text", (ArrayList<String>)sentences);
+                intent.putExtra("count", count);
+                intent.putExtra("fontSize", fontSize);
                 startActivity(intent);
                 break;
             case R.id.action_search:
@@ -463,6 +467,7 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
         } catch (Exception e) {
             //...
         }
+        Log.i("Test", " " + sentences.size() + "   " + count);
     }
     private void parsing_korean(String text){
         //opennlp 사용하기

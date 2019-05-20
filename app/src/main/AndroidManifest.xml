@@ -22,6 +22,7 @@
         <activity android:name="com.MoP.os_pdf.PdfActivity" />
         <activity android:name="com.MoP.os_pdf.AllPdfActivity" />
         <activity android:name="com.MoP.os_pdf.LoadingActivity" />
+        <activity android:name="com.MoP.os_pdf.SummaryActivity" />
 
     </application>
 
