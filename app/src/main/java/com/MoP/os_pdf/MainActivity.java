@@ -6,6 +6,7 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
@@ -153,8 +154,37 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        ArrayAdapter<String> fileList = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, lItem);
-        lvFileControl.setAdapter(fileList);
+//        ArrayAdapter<String> fileList = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, lItem);
+//
+//        lvFileControl.setAdapter(fileList);
+
+        ListView listview ;
+        ListViewAdapter adapter;
+
+        // Adapter 생성
+        adapter = new ListViewAdapter() ;
+
+        // 리스트뷰 참조 및 Adapter달기
+        listview = (ListView) findViewById(R.id.lvFileControl);
+        listview.setAdapter(adapter);
+
+        for(int i = 0; i<lItem.size(); i++){
+            String temp = lItem.get(i);
+            temp = temp.substring(temp.length() - 3, temp.length());
+            Log.i("Test", temp);
+            if(temp.equals("pdf")) {
+                adapter.addItem(ContextCompat.getDrawable(this, R.drawable.pdf),
+                        lItem.get(i));
+            }
+            else {
+                adapter.addItem(ContextCompat.getDrawable(this, R.drawable.folder),
+                        lItem.get(i));
+            }
+        }
+
+
+
+
     }
 
 
