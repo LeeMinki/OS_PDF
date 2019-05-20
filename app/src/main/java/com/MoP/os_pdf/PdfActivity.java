@@ -312,6 +312,7 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
                 intent.putExtra("text", (ArrayList<String>)sentences);
                 intent.putExtra("count", count);
                 intent.putExtra("fontSize", fontSize);
+                intent.putExtra("number", number);
                 startActivity(intent);
                 break;
             case R.id.summary:
@@ -319,6 +320,7 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
                 intent2.putExtra("text", (ArrayList<String>)sentences);
                 intent2.putExtra("count", count);
                 intent2.putExtra("fontSize", fontSize);
+                intent2.putExtra("number", number);
                 startActivity(intent2);
                 break;
             case R.id.action_search:

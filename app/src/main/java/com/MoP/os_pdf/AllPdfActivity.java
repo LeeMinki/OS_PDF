@@ -21,6 +21,8 @@ public class AllPdfActivity extends MainActivity {
     ArrayList<String> test;
     int count;
     int fontSize;
+    int number;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,6 +39,7 @@ public class AllPdfActivity extends MainActivity {
         test = getIntent().getStringArrayListExtra("text");
         count = intent.getExtras().getInt("count");
         fontSize = intent.getExtras().getInt("fontSize");
+        number = intent.getExtras().getInt("number");
         Log.i("Test", "pdf view " + test.size() + "    " + count);
 
     }
@@ -55,6 +58,8 @@ public class AllPdfActivity extends MainActivity {
                 intent.putExtra("text", (ArrayList<String>)test);
                 intent.putExtra("count", count);
                 intent.putExtra("fontSize", fontSize);
+                intent.putExtra("number", number);
+
                 startActivity(intent);
                 break;
         }
