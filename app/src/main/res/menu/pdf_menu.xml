@@ -16,6 +16,9 @@
         <item
             android:id="@+id/setting_number_of_sentences"
             android:title="문장 개수" />
+        <item
+            android:id="@+id/summary"
+            android:title="요약" />
         <!--<item-->
             <!--android:id="@+id/setting_translation"-->
             <!--android:title="번역" />-->

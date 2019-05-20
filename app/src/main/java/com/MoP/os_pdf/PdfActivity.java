@@ -314,6 +314,13 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
                 intent.putExtra("fontSize", fontSize);
                 startActivity(intent);
                 break;
+            case R.id.summary:
+                Intent intent2 = new Intent(PdfActivity.this, SummaryActivity.class);
+                intent2.putExtra("text", (ArrayList<String>)sentences);
+                intent2.putExtra("count", count);
+                intent2.putExtra("fontSize", fontSize);
+                startActivity(intent2);
+                break;
             case R.id.action_search:
                 MenuItem mSearch = item;
                 SearchView mSearchView = (SearchView) mSearch.getActionView();

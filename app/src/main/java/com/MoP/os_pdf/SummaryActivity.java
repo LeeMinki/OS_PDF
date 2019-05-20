@@ -34,7 +34,7 @@ public class SummaryActivity extends Activity {
     public void setting(ArrayList<String> text){
         if(text.size() >= 0){
             set = "";
-            for (int i = 0; i < count; i++) {
+            for (int i = 0; i <= count; i++) {
                 set += text.get(i);
             }
         }
