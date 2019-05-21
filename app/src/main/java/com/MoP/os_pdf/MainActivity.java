@@ -170,9 +170,9 @@ public class MainActivity extends AppCompatActivity {
 
         for(int i = 0; i<lItem.size(); i++){
             String temp = lItem.get(i);
-            temp = temp.substring(temp.length() - 3, temp.length());
+            ext = temp.substring(temp.lastIndexOf('.') + 1, temp.length());
             Log.i("Test", temp);
-            if(temp.equals("pdf")) {
+            if(ext.equals("pdf")) {
                 adapter.addItem(ContextCompat.getDrawable(this, R.drawable.pdf),
                         lItem.get(i));
             }
