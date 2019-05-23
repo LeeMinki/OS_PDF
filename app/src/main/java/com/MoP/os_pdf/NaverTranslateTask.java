@@ -16,11 +16,9 @@ import java.net.URLEncoder;
 //ASYNCTASK
 public class NaverTranslateTask extends AsyncTask<String, Void, String> {
 
-    public String resultText;
     //Naver
-    String clientId = "z7J6NPnUTX43IST_x_Tw";//애플리케이션 클라이언트 아이디값";
-    String clientSecret = "RoQrH2ZPJA";//애플리케이션 클라이언트 시크릿값";
-    //언어선택도 나중에 사용자가 선택할 수 있게 옵션 처리해 주면 된다.
+    String clientId = "z7J6NPnUTX43IST_x_Tw";
+    String clientSecret = "RoQrH2ZPJA";
     String sourceLang = "en";
     String targetLang = "ko";
 
@@ -32,11 +30,7 @@ public class NaverTranslateTask extends AsyncTask<String, Void, String> {
     //AsyncTask 메인처리
     @Override
     protected String doInBackground(String... strings) {
-        //네이버제공 예제 복사해 넣자.
-        //Log.d("AsyncTask:", "1.Background");
-
         String sourceText = strings[0];
-
         try {
             String text = URLEncoder.encode(sourceText, "UTF-8");
             String apiURL = "https://openapi.naver.com/v1/papago/n2mt";
@@ -73,11 +67,10 @@ public class NaverTranslateTask extends AsyncTask<String, Void, String> {
         }
     }
 
-    //번역된 결과를 받아서 처리
+    // 번역된 결과를 받아서 처리
     @Override
     protected void onPostExecute(String result) {
         PdfActivity p = new PdfActivity();
-//        super.onPostExecute(s);
         JsonParser parser = new JsonParser();
         JsonElement element = parser.parse(result);
         if(element.getAsJsonObject().get("errorMessage") != null) {

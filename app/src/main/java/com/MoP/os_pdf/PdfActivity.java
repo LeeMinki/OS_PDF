@@ -109,7 +109,6 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
     int fontSize = 30;
 
 
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -123,16 +122,15 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
         filePath = intent.getExtras().getString("fileName");
         fontSize = intent.getExtras().getInt("fontSize");
 
-        translate = (Button)findViewById(R.id.trans_button);
+        translate = (Button) findViewById(R.id.trans_button);
         translate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(trans == true){
+                if (trans == true) {
                     pdfSlide(2, true, true);
                     translate.setText("원본보기");
                     trans = false;
-                }
-                else if(trans == false){
+                } else if (trans == false) {
                     pdfSlide(2, true, false);
                     translate.setText("TRANSLATE");
                     trans = true;
@@ -162,7 +160,7 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
             @Override
             public void onClick(View v) {
                 pdfSlide(0, true, false);
-                if(trans == false){
+                if (trans == false) {
                     translate.setText("TRANSLATE");
                     trans = true;
                 }
@@ -171,7 +169,7 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
         next.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 pdfSlide(1, true, false);
-                if(trans == false){
+                if (trans == false) {
                     translate.setText("TRANSLATE");
                     trans = true;
                 }
@@ -218,10 +216,10 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
         getSupportActionBar().setTitle(null);
         myToolbar.setBackgroundColor(Color.argb(50, 50, 50, 50));
         extractText(filePath);
-        if(sentences.size() != 0)
+        if (sentences.size() != 0)
             textswitcher.setText(sentences.get(0));
         extractImage(filePath);
-        if(images.size() != 0)
+        if (images.size() != 0)
             imageswitcher.setImageDrawable(new BitmapDrawable(getResources(), images.get(0)));
     }
 
@@ -309,7 +307,7 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
                 Log.i("Test", " " + sentences.size() + "   " + count);
                 Intent intent = new Intent(PdfActivity.this, AllPdfActivity.class);
                 intent.putExtra("fileName", filePath);
-                intent.putExtra("text", (ArrayList<String>)sentences);
+                intent.putExtra("text", (ArrayList<String>) sentences);
                 intent.putExtra("count", count);
                 intent.putExtra("fontSize", fontSize);
                 intent.putExtra("number", number);
@@ -317,7 +315,7 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
                 break;
             case R.id.summary:
                 Intent intent2 = new Intent(PdfActivity.this, SummaryActivity.class);
-                intent2.putExtra("text", (ArrayList<String>)sentences);
+                intent2.putExtra("text", (ArrayList<String>) sentences);
                 intent2.putExtra("count", count);
                 intent2.putExtra("fontSize", fontSize);
                 intent2.putExtra("number", number);
@@ -328,7 +326,7 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
                 SearchView mSearchView = (SearchView) mSearch.getActionView();
                 mSearchView.setQueryHint("Search");
 
-                mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener(){
+                mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
 
                     @Override
                     public boolean onQueryTextSubmit(String s) {
@@ -353,9 +351,9 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
         int localCount, localSize;
         String set = "";
 
-        if(isText && sentences.size() == 0)
+        if (isText && sentences.size() == 0)
             return;
-        if(!isText && images.size() == 0)
+        if (!isText && images.size() == 0)
             return;
         if (isText) {
             localCount = count;
@@ -399,9 +397,9 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
         }
         if (isText) {
             for (int i = 0; (localCount + i) < sentences.size() && i < number; i++) {
-                set += sentences.get(localCount + i) +"\n\n";
+                set += sentences.get(localCount + i) + "\n\n";
             }
-            if(translation == true) {
+            if (translation == true) {
                 asyncTask = new NaverTranslateTask();
                 asyncTask.execute(set);
                 //번역된 set
@@ -415,7 +413,7 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
 //                translateView.setVisibility(View.VISIBLE);
 //                translateView.setText(set);
             }
-           // set = set.replaceAll(System.getProperty("line.separator"), " ");
+            // set = set.replaceAll(System.getProperty("line.separator"), " ");
 
             textswitcher.setInAnimation(in);
             textswitcher.setOutAnimation(out);
@@ -448,7 +446,6 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
             case MotionEvent.ACTION_UP:
                 changeX = event.getX();
                 changeY = event.getY();
-
                 break;
             default:
                 return false;
@@ -463,7 +460,7 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
             PDDocument document = PDDocument.load(file);
             pdfStripper = new PDFTextStripper();
             text = pdfStripper.getText(document);
-            if(text.substring(0,30).matches(".*[ㄱ-ㅎㅏ-ㅣ가-힣]+.*")) {
+            if (text.substring(0, 30).matches(".*[ㄱ-ㅎㅏ-ㅣ가-힣]+.*")) {
 // 한글이 포함된 문자열
                 parsing_korean(text);
             } else {
@@ -478,7 +475,8 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
         }
         Log.i("Test", " " + sentences.size() + "   " + count);
     }
-    private void parsing_korean(String text){
+
+    private void parsing_korean(String text) {
         //opennlp 사용하기
         try {
             //Toast.makeText(getApplicationContext(), "한글", Toast.LENGTH_LONG).show();
@@ -497,6 +495,7 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
         }
 
     }
+
     private void parsing(String text) {
 
 //        // 정규 표현식으로 split

@@ -69,9 +69,6 @@ public class MainActivity extends AppCompatActivity {
                     Log.i("Test", "Touch File Name:" + mFileName);
                     showDialog(1);
 
-
-
-
                 }
             }
         });
