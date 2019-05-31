@@ -110,7 +110,6 @@ public class SummaryActivity extends Activity {
             for (int i = 0; i < sentences.size(); i++) {
                 set += sentences.get(i) + "\n";
             }
-            check = false;
         } else {
             if (sentences.size() >= 0) {
                 set = "";
@@ -124,7 +123,6 @@ public class SummaryActivity extends Activity {
                     set += sentences.get(i) + "\n";
                 }
             }
-            check = false;
         }
 //        if (sentences.size() - 1 >= count && sentences.size() - 1 >= count + number) {
 //            number = number - 1;
