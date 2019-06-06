@@ -10,4 +10,13 @@
         <item>9 문장 요약</item>
         <item>10 문장 요약</item>
     </string-array>
+    <string-array name="algorithms">
+        <item>luhn</item>
+        <item>edmundson</item>
+        <item>lsa</item>
+        <item>text-rank</item>
+        <item>lex-rank</item>
+        <item>sum-basic</item>
+        <item>kl</item>
+    </string-array>
 </resources>

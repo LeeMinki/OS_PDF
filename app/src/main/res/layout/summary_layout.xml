@@ -14,56 +14,89 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/false_check"
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/false_check"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:layout_marginRight="10dp"
+                    android:layout_toLeftOf="@+id/switch1"
+                    android:text="until now"
+                    android:textColor="#000000"
+                    android:textSize="20dp"
+                    android:textStyle="bold" />
+
+                <Switch
+                    android:id="@+id/switch1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+
+                    android:text=""
+                    android:textOff=""
+                    android:textOn="" />
+
+                <TextView
+                    android:id="@+id/true_check"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:layout_marginLeft="10dp"
+                    android:layout_toRightOf="@+id/switch1"
+                    android:text="entire"
+                    android:textColor="#808080"
+                    android:textSize="20dp"
+                    android:textStyle="bold" />
+
+
+            </LinearLayout>
+
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:layout_marginRight="10dp"
-                android:layout_toLeftOf="@+id/switch1"
-                android:text="until now"
-                android:textColor="#000000"
-                android:textSize="20dp"
-                android:textStyle="bold" />
+                android:orientation="horizontal">
 
-            <Switch
-                android:id="@+id/switch1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
+                <Spinner
+                    android:id="@+id/spinner1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center|right"
+                    android:entries="@array/summary"
+                    android:gravity="center|clip_vertical"
 
-                android:text=""
-                android:textOff=""
-                android:textOn="" />
+                    android:spinnerMode="dropdown" />
 
-            <TextView
-                android:id="@+id/true_check"
-                android:textColor="#808080"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:layout_marginLeft="10dp"
-                android:layout_toRightOf="@+id/switch1"
-                android:text="entire"
-                android:textSize="20dp"
-                android:textStyle="bold" />
-            <View
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_weight="1" />
+                <View
+                    android:layout_width="45dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
 
+                <TextView
+                    android:id="@+id/textView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Algirithms"
+                    android:textColor="#000000"
+                    android:textStyle="bold" />
 
-            <Spinner
-                android:id="@+id/spinner1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center|right"
-                android:entries="@array/summary"
-                android:gravity="center|clip_vertical"
+                <Spinner
+                    android:id="@+id/spinner2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center|right"
+                    android:entries="@array/algorithms"
+                    android:gravity="center|clip_vertical"
 
-                android:spinnerMode="dropdown" />
+                    android:spinnerMode="dropdown" />
+            </LinearLayout>
 
         </LinearLayout>
 

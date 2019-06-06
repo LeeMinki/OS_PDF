@@ -1,6 +1,7 @@
 package com.MoP.os_pdf;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -15,6 +16,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 
 public class SummaryActivity extends Activity {
+    public Context mContext = this;
     public static TextView textview;
     static ArrayList<String> sentences;
     static int count;
@@ -24,7 +26,9 @@ public class SummaryActivity extends Activity {
     static String set = "Empty sentence";
     static boolean check = false;
     Spinner spinner;
+    Spinner spinner_al;
     SummaryTask asyncTask;
+    String algorithms;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -39,6 +43,7 @@ public class SummaryActivity extends Activity {
         number = intent.getExtras().getInt("number");
         Log.i("Test", "pdf view " + sentences.size() + " count: " + count + " font size: " + fontSize + " number: " + number);
         spinner = findViewById(R.id.spinner1);
+        spinner_al = findViewById(R.id.spinner2);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -46,6 +51,37 @@ public class SummaryActivity extends Activity {
                 setting();
             }
 
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+        spinner_al.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                Toast.makeText(SummaryActivity.this, "position = " + position,  Toast.LENGTH_SHORT).show();
+                if(position == 0){
+                    algorithms = "luhn";
+                }
+                else if(position == 1){
+                    algorithms = "edmundson";
+                }
+                else if(position == 2){
+                    algorithms = "lsa";
+                }
+                else if(position == 3){
+                    algorithms = "text-rank";
+                }
+                else if(position == 4){
+                    algorithms = "lex-rank";
+                }
+                else if(position == 5){
+                    algorithms = "sum-basic";
+                }
+                else if(position == 6){
+                    algorithms = "kl";
+                }
+                setting();
+            }
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
             }
@@ -98,6 +134,7 @@ public class SummaryActivity extends Activity {
         }
 
         asyncTask = new SummaryTask();
-        asyncTask.execute("http://13.209.168.0:3000/summary", set, String.valueOf(sumCount));
+        asyncTask.execute("http://13.209.168.0:3000/summary", set, String.valueOf(sumCount), algorithms);
     }
+
 }
