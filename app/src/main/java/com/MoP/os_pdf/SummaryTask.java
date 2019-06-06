@@ -80,48 +80,12 @@ public class SummaryTask extends AsyncTask<String, Void, String> {
         }
     }
 
-    private void parsing(String result) {
-
-        try {
-
-
-            set = "";
-
-
-            BreakIterator iterator = BreakIterator.getSentenceInstance(Locale.US);
-            iterator.setText(result);
-
-            int lastIndex = iterator.first();
-            String temp = " ";
-            String comp = " ";
-
-            while (lastIndex != BreakIterator.DONE) {
-                int firstIndex = lastIndex;
-                lastIndex = iterator.next();
-
-                if (lastIndex != BreakIterator.DONE) {
-
-                    //한 문장씩 끊어줌
-                    String sentence = result.substring(firstIndex, lastIndex);
-                    set += sentence + "\n\n";
-                }
-            }
-
-
-
-        } catch (Exception e) {
-            Log.i("Exception", "" + e);
-        }
-
-    }
-
     @Override
     protected void onPostExecute(String result) {
-        Log.i("Summary", "onPostExcute: " + result);
+        String Final = "";
         SummaryActivity sa = new SummaryActivity();
-        parsing(result);
-        sa.textview.setText(set);
+        Final = result.replace("\\n", "\n\n");
+        sa.textview.setText(Final);
         sa.textview.setTextSize(sa.fontSize);
     }
-
 }
