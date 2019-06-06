@@ -18,6 +18,7 @@ public class NaverTranslateTask extends AsyncTask<String, Void, String> {
     String clientSecret = "RoQrH2ZPJA";
     String sourceLang = "en";
     String targetLang = "ko";
+    boolean isEntire = false;
 
     @Override
     protected void onPreExecute() {
@@ -27,6 +28,14 @@ public class NaverTranslateTask extends AsyncTask<String, Void, String> {
     @Override
     protected String doInBackground(String... strings) {
         String sourceText = strings[0];
+        String check = strings[1];
+        Log.i("AAAA", check);
+        if(check.equals("false")) {
+            Log.i("AAAA", "wow");
+            isEntire = false;
+        } else if(check.equals(("true"))) {
+            isEntire = true;
+        }
         try {
             String text = URLEncoder.encode(sourceText, "UTF-8");
             String apiURL = "https://openapi.naver.com/v1/papago/n2mt";
@@ -67,6 +76,7 @@ public class NaverTranslateTask extends AsyncTask<String, Void, String> {
     @Override
     protected void onPostExecute(String result) {
         PdfActivity p = new PdfActivity();
+        SummaryActivity s = new SummaryActivity();
         JsonParser parser = new JsonParser();
         JsonElement element = parser.parse(result);
         if (element.getAsJsonObject().get("errorMessage") != null) {
@@ -74,8 +84,14 @@ public class NaverTranslateTask extends AsyncTask<String, Void, String> {
                     "[Code: " + element.getAsJsonObject().get("errorCode").getAsString() + "]");
         } else if (element.getAsJsonObject().get("message") != null) {
             // 번역 결과 출력
-            p.textswitcher.setText(element.getAsJsonObject().get("message").getAsJsonObject().get("result")
-                    .getAsJsonObject().get("translatedText").getAsString());
+            if(isEntire == false) {
+                p.textswitcher.setText(element.getAsJsonObject().get("message").getAsJsonObject().get("result")
+                        .getAsJsonObject().get("translatedText").getAsString());
+            }
+            else if(isEntire == true) {
+                s.textview.setText(element.getAsJsonObject().get("message").getAsJsonObject().get("result")
+                        .getAsJsonObject().get("translatedText").getAsString());
+            }
         }
     }
 }

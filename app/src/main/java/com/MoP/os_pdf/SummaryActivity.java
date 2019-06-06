@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.Spinner;
 import android.widget.Switch;
@@ -27,6 +28,10 @@ public class SummaryActivity extends Activity {
     Spinner spinner_al;
     SummaryTask asyncTask;
     String algorithms = "luhn";
+    public Button button;
+    public boolean trans_check = false;
+    NaverTranslateTask async;
+    String temp = "";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -42,6 +47,23 @@ public class SummaryActivity extends Activity {
         Log.i("Test", "pdf view " + sentences.size() + " count: " + count + " font size: " + fontSize + " number: " + number);
         spinner = findViewById(R.id.spinner1);
         spinner_al = findViewById(R.id.spinner2);
+        button = findViewById(R.id.trans);
+        button.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                if(trans_check == false){
+                    trans_check = true;
+                    temp = textview.getText().toString();
+                    async = new NaverTranslateTask();
+                    async.execute(temp, "true");
+                    button.setText("원본보기");
+                }
+                else if(trans_check == true){
+                    trans_check = false;
+                    textview.setText(temp);
+                    button.setText("Translation");
+                }
+            }
+        });
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -94,11 +116,16 @@ public class SummaryActivity extends Activity {
                     TextView t2 = findViewById(R.id.true_check);
                     t1.setTextColor(Color.parseColor("#000000"));
                     t2.setTextColor(Color.parseColor("#808080"));
+                    trans_check = false;
+                    button.setText("Translation");
+
                 } else if (isChecked == true) {
                     TextView t1 = findViewById(R.id.false_check);
                     TextView t2 = findViewById(R.id.true_check);
                     t2.setTextColor(Color.parseColor("#000000"));
                     t1.setTextColor(Color.parseColor("#808080"));
+                    trans_check = false;
+                    button.setText("Translation");
                 }
                 check = isChecked;
                 setting();

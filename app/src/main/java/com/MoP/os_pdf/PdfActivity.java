@@ -367,7 +367,7 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
             }
             if (translation == true) {
                 asyncTask = new NaverTranslateTask();
-                asyncTask.execute(set);
+                asyncTask.execute(set, "false");
             }
             textswitcher.setInAnimation(in);
             textswitcher.setOutAnimation(out);

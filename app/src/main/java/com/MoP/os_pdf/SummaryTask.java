@@ -13,7 +13,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class SummaryTask extends AsyncTask<String, Void, String> {
-
+    public String Final;
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
@@ -69,7 +69,7 @@ public class SummaryTask extends AsyncTask<String, Void, String> {
 
     @Override
     protected void onPostExecute(String result) {
-        String Final = "";
+        Final = "";
         SummaryActivity sa = new SummaryActivity();
         Final = result.replace("\\n", "\n\n");
         sa.textview.setText(Final);
