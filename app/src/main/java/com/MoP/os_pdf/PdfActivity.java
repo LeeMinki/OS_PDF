@@ -303,6 +303,7 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
                         startActivity(intent);
                         return false;
                     }
+
                     @Override
                     public boolean onQueryTextChange(String s) {
                         return false;
@@ -445,11 +446,9 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
         } catch (Exception e) {
             //
         }
-
     }
 
     private void parsing(String text) {
-
 //        // 정규 표현식으로 split
 //        String[] words = text.split("\\.\\r\\n|\\.\\r|\\.\\n|\\.\\n\\r|\\.\\s|\\r\\n|\\r|\\n|\\n\\r");
 //

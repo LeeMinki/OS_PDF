@@ -16,7 +16,6 @@ import android.widget.Toast;
 import java.util.ArrayList;
 
 public class SummaryActivity extends Activity {
-    public Context mContext = this;
     public static TextView textview;
     static ArrayList<String> sentences;
     static int count;
@@ -28,7 +27,7 @@ public class SummaryActivity extends Activity {
     Spinner spinner;
     Spinner spinner_al;
     SummaryTask asyncTask;
-    String algorithms;
+    String algorithms = "luhn";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -58,7 +57,6 @@ public class SummaryActivity extends Activity {
         spinner_al.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(SummaryActivity.this, "position = " + position,  Toast.LENGTH_SHORT).show();
                 if(position == 0){
                     algorithms = "luhn";
                 }
@@ -132,9 +130,7 @@ public class SummaryActivity extends Activity {
                 }
             }
         }
-
         asyncTask = new SummaryTask();
         asyncTask.execute("http://13.209.168.0:3000/summary", set, String.valueOf(sumCount), algorithms);
     }
-
 }

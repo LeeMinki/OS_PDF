@@ -1,30 +1,18 @@
 package com.MoP.os_pdf;
 
-import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.text.BreakIterator;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
-
-import opennlp.tools.sentdetect.SentenceDetectorME;
-import opennlp.tools.sentdetect.SentenceModel;
 
 public class SummaryTask extends AsyncTask<String, Void, String> {
-    List<String> sentences = new ArrayList<>();
-    String set;
 
     @Override
     protected void onPreExecute() {
@@ -74,7 +62,6 @@ public class SummaryTask extends AsyncTask<String, Void, String> {
             br.close();
             return response.toString();
         } catch (Exception e) {
-            //System.out.println(e);
             Log.d("error", e.getMessage());
             return null;
         }
