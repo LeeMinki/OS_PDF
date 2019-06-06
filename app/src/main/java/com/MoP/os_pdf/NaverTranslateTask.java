@@ -13,10 +13,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 
-//ASYNCTASK
 public class NaverTranslateTask extends AsyncTask<String, Void, String> {
-
-    //Naver
     String clientId = "z7J6NPnUTX43IST_x_Tw";
     String clientSecret = "RoQrH2ZPJA";
     String sourceLang = "en";
@@ -27,7 +24,6 @@ public class NaverTranslateTask extends AsyncTask<String, Void, String> {
         super.onPreExecute();
     }
 
-    //AsyncTask 메인처리
     @Override
     protected String doInBackground(String... strings) {
         String sourceText = strings[0];
@@ -35,12 +31,12 @@ public class NaverTranslateTask extends AsyncTask<String, Void, String> {
             String text = URLEncoder.encode(sourceText, "UTF-8");
             String apiURL = "https://openapi.naver.com/v1/papago/n2mt";
             URL url = new URL(apiURL);
-            HttpURLConnection con = (HttpURLConnection)url.openConnection();
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
             con.setRequestMethod("POST");
             con.setRequestProperty("X-Naver-Client-Id", clientId);
             con.setRequestProperty("X-Naver-Client-Secret", clientSecret);
             // post request
-            String postParams = "source="+sourceLang+"&target="+targetLang+"&text=" + text;
+            String postParams = "source=" + sourceLang + "&target=" + targetLang + "&text=" + text;
             con.setDoOutput(true);
             DataOutputStream wr = new DataOutputStream(con.getOutputStream());
             wr.writeBytes(postParams);
@@ -48,7 +44,7 @@ public class NaverTranslateTask extends AsyncTask<String, Void, String> {
             wr.close();
             int responseCode = con.getResponseCode();
             BufferedReader br;
-            if(responseCode==200) { // 정상 호출
+            if (responseCode == 200) { // 정상 호출
                 br = new BufferedReader(new InputStreamReader(con.getInputStream()));
             } else {  // 에러 발생
                 br = new BufferedReader(new InputStreamReader(con.getErrorStream()));
@@ -73,14 +69,13 @@ public class NaverTranslateTask extends AsyncTask<String, Void, String> {
         PdfActivity p = new PdfActivity();
         JsonParser parser = new JsonParser();
         JsonElement element = parser.parse(result);
-        if(element.getAsJsonObject().get("errorMessage") != null) {
+        if (element.getAsJsonObject().get("errorMessage") != null) {
             Log.i("error", "Error!! " +
                     "[Code: " + element.getAsJsonObject().get("errorCode").getAsString() + "]");
-        } else if(element.getAsJsonObject().get("message") != null) {
+        } else if (element.getAsJsonObject().get("message") != null) {
             // 번역 결과 출력
             p.textswitcher.setText(element.getAsJsonObject().get("message").getAsJsonObject().get("result")
                     .getAsJsonObject().get("translatedText").getAsString());
         }
-
     }
 }

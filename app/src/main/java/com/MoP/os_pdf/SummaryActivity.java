@@ -1,10 +1,8 @@
 package com.MoP.os_pdf;
 
 import android.app.Activity;
-import android.content.ContentValues;
 import android.content.Intent;
 import android.graphics.Color;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -14,24 +12,6 @@ import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
-
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 
 public class SummaryActivity extends Activity {
@@ -71,14 +51,6 @@ public class SummaryActivity extends Activity {
             }
         });
 
-//        sw.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-//
-//            @Override
-//            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-//                check = isChecked;
-//                setting();
-//            }
-//        });
         sw.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 
             @Override
@@ -124,14 +96,7 @@ public class SummaryActivity extends Activity {
                 }
             }
         }
-//        if (sentences.size() - 1 >= count && sentences.size() - 1 >= count + number) {
-//            number = number - 1;
-//            for (int i = count + 1; i <= count + number; i++) {
-//                set += sentences.get(i);
-//            }
-//        }
 
-        Log.i("Test", set);
         asyncTask = new SummaryTask();
         asyncTask.execute("http://13.209.168.0:3000/summary", set, String.valueOf(sumCount));
     }

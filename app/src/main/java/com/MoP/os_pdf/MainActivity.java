@@ -1,12 +1,10 @@
 package com.MoP.os_pdf;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
@@ -20,8 +18,6 @@ import android.os.Environment;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -37,7 +33,6 @@ public class MainActivity extends AppCompatActivity {
     public String mFileName;
     private ListView lvFileControl;
     private Context mContext = this;
-
     private List<String> lItem = null;
     private List<String> lPath = null;
     private String mRoot = Environment.getExternalStorageDirectory().getAbsolutePath();
@@ -73,10 +68,11 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
     @Override
     protected Dialog onCreateDialog(int id) {
         // TODO Auto-generated method stub
-        final String [] items = {"작게", "보통", "크게"};
+        final String[] items = {"작게", "보통", "크게"};
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
         builder.setTitle("글자크기 선택");
 
@@ -85,21 +81,21 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 // TODO Auto-generated method stub
-                if(items[which] == "작게"){
+                if (items[which] == "작게") {
                     dialog.dismiss();
                     Intent intent = new Intent(MainActivity.this, PdfActivity.class);
                     intent.putExtra("fileName", mFileName);
                     intent.putExtra("fontSize", 15);
                     startActivity(intent);
                 }
-                if(items[which] == "보통"){
+                if (items[which] == "보통") {
                     dialog.dismiss();
                     Intent intent = new Intent(MainActivity.this, PdfActivity.class);
                     intent.putExtra("fileName", mFileName);
                     intent.putExtra("fontSize", 30);
                     startActivity(intent);
                 }
-                if(items[which] == "크게"){
+                if (items[which] == "크게") {
                     dialog.dismiss();
                     Intent intent = new Intent(MainActivity.this, PdfActivity.class);
                     intent.putExtra("fileName", mFileName);
@@ -113,10 +109,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
-
-
-    public String getter(){
+    public String getter() {
         return mFileName;
     }
 
@@ -151,45 +144,32 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-//        ArrayAdapter<String> fileList = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, lItem);
-//
-//        lvFileControl.setAdapter(fileList);
-
-        ListView listview ;
+        ListView listview;
         ListViewAdapter adapter;
 
         // Adapter 생성
-        adapter = new ListViewAdapter() ;
+        adapter = new ListViewAdapter();
 
         // 리스트뷰 참조 및 Adapter달기
         listview = (ListView) findViewById(R.id.lvFileControl);
         listview.setAdapter(adapter);
 
-        for(int i = 0; i<lItem.size(); i++){
+        for (int i = 0; i < lItem.size(); i++) {
             String temp = lItem.get(i);
             ext = temp.substring(temp.lastIndexOf('.') + 1, temp.length());
             Log.i("Test", temp);
-            if(ext.equals("pdf")) {
+            if (ext.equals("pdf")) {
                 adapter.addItem(ContextCompat.getDrawable(this, R.drawable.pdf),
                         lItem.get(i));
-            }
-            else {
+            } else {
                 adapter.addItem(ContextCompat.getDrawable(this, R.drawable.folder),
                         lItem.get(i));
             }
         }
-
-
-
-
     }
-
 
     private void checkPermission() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            // 다시 보지 않기 버튼을 만드려면 이 부분에 바로 요청을 하도록 하면 됨 (아래 else{..} 부분 제거)
-            // 처음 호출시엔 if()안의 부분은 false로 리턴 됨 -> else{..}의 요청으로 넘어감
-
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                 new AlertDialog.Builder(this)
                         .setTitle("알림")
@@ -249,24 +229,19 @@ public class MainActivity extends AppCompatActivity {
         switch (requestCode) {
             case MY_PERMISSION_STORAGE:
                 for (int i = 0; i < grantResults.length; i++) {
-                    // grantResults[] : 허용된 권한은 0, 거부한 권한은 -1
                     if (grantResults[i] < 0) {
                         Toast.makeText(MainActivity.this, "해당 권한을 활성화 하셔야 합니다.", Toast.LENGTH_SHORT).show();
                         return;
                     }
                 }
-                // 허용했다면 이 부분에서..
                 break;
             case MY_PERMISSION_INTERNET:
                 for (int i = 0; i < grantResults.length; i++) {
-                    // grantResults[] : 허용된 권한은 0, 거부한 권한은 -1
                     if (grantResults[i] < 0) {
                         Toast.makeText(MainActivity.this, "해당 권한을 활성화 하셔야 합니다.", Toast.LENGTH_SHORT).show();
                         return;
                     }
                 }
-                // 허용했다면 이 부분에서..
-
                 break;
         }
     }

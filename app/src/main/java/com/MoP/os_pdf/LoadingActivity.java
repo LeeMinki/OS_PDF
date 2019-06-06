@@ -1,7 +1,6 @@
 package com.MoP.os_pdf;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
@@ -10,7 +9,6 @@ import android.widget.ProgressBar;
 public class LoadingActivity extends Activity {
     ProgressBar progressBar;
     public int time_check = 2000;
-    //private MainActivity main;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,7 +29,8 @@ public class LoadingActivity extends Activity {
         time_check = 0;
 
     }
-    public void step(View v){
+
+    public void step(View v) {
         progressBar.setIndeterminate(true);
     }
 }

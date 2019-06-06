@@ -2,16 +2,10 @@ package com.MoP.os_pdf;
 
 import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.TextView;
-
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
-
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.DataOutputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -19,7 +13,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class SummaryTask extends AsyncTask<String, Void, String> {
-    private String url;
 
     @Override
     protected void onPreExecute() {
@@ -31,12 +24,12 @@ public class SummaryTask extends AsyncTask<String, Void, String> {
         String sumURL = strings[0];
         String set = strings[1];
         String sumCount = strings[2];
-        Log.i("Summary", sumURL +", " + set + ", " + sumCount);
+        Log.i("Summary", sumURL + ", " + set + ", " + sumCount);
         try {
             JSONObject jsonObject = new JSONObject();
             jsonObject.accumulate("text", set);
             jsonObject.accumulate("number", sumCount);
-            URL url  = new URL(sumURL);
+            URL url = new URL(sumURL);
 
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
             con.setRequestMethod("POST");
@@ -52,7 +45,7 @@ public class SummaryTask extends AsyncTask<String, Void, String> {
             writer.close();
 
             int responseCode = con.getResponseCode();
-            Log.i("Summary","Response Code: " + responseCode);
+            Log.i("Summary", "Response Code: " + responseCode);
             BufferedReader br;
             if (responseCode == 200) { // 정상 호출
                 br = new BufferedReader(new InputStreamReader(con.getInputStream()));
@@ -75,7 +68,7 @@ public class SummaryTask extends AsyncTask<String, Void, String> {
 
     @Override
     protected void onPostExecute(String result) {
-          Log.i("Summary", "onPostExcute: " + result);
+        Log.i("Summary", "onPostExcute: " + result);
         SummaryActivity sa = new SummaryActivity();
         sa.textview.setText(result);
         sa.textview.setTextSize(sa.fontSize);

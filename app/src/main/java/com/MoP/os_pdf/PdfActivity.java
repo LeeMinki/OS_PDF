@@ -1,47 +1,34 @@
 package com.MoP.os_pdf;
 
-import android.app.Activity;
 import android.app.SearchManager;
-import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
-import android.view.ContextMenu;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ImageSwitcher;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.PopupMenu;
-import android.widget.PopupWindow;
 import android.widget.TextSwitcher;
 import android.widget.TextView;
-import android.widget.Toast;
-import android.support.v4.view.ViewPager;
 import android.widget.ViewSwitcher;
-
 
 import com.tom_roush.pdfbox.cos.COSName;
 import com.tom_roush.pdfbox.pdmodel.PDDocument;
@@ -54,7 +41,6 @@ import com.tom_roush.pdfbox.text.PDFTextStripper;
 import com.tom_roush.pdfbox.util.PDFBoxResourceLoader;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.BreakIterator;
@@ -65,17 +51,14 @@ import java.util.Locale;
 
 import opennlp.tools.sentdetect.SentenceDetectorME;
 import opennlp.tools.sentdetect.SentenceModel;
-import opennlp.tools.cmdline.parser.ParserTool;
-import opennlp.tools.parser.Parse;
-import opennlp.tools.parser.Parser;
-import opennlp.tools.parser.ParserFactory;
-import opennlp.tools.parser.ParserModel;
-
 
 public class PdfActivity extends AppCompatActivity implements View.OnTouchListener {
     private String filePath;
     private PDFTextStripper pdfStripper;
     private String text;
+    private DatabaseHelper helper;
+    private SQLiteDatabase db;
+    private Cursor cursor;
 
     public List<String> sentences = new ArrayList<>();
     List<Bitmap> images = new ArrayList<>();
@@ -112,15 +95,37 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         Intent intent2 = new Intent(PdfActivity.this, LoadingActivity.class);
         startActivity(intent2);
-
         setContentView(R.layout.pdf_layout);
+        helper = new DatabaseHelper(this);
+        try {
+            db = helper.getWritableDatabase();
+        } catch (SQLiteException ex) {
+            db = helper.getReadableDatabase();
+        }
         PDFBoxResourceLoader.init(getApplicationContext());
         Intent intent = getIntent();
         filePath = intent.getExtras().getString("fileName");
         fontSize = intent.getExtras().getInt("fontSize");
+
+        cursor = db.rawQuery("SELECT * FROM info WHERE NAME ='"
+                + filePath + "';", null);
+
+        // 데이터베이스에 항목이 없을 경우 삽입
+        if (cursor.getCount() == 0) {
+            db.execSQL("INSERT INTO info VALUES (null, '" + filePath + "', '0', '0', '1');");
+        } else { // 항목이 있을 경우 count, imgcount, number 값 가져오기
+            while (cursor.moveToNext()) {
+                Log.i("DB", cursor.getString(1));
+                Log.i("DB", "1 " + cursor.getInt(2));
+                Log.i("DB", "2 " + cursor.getInt(3));
+                Log.i("DB", "3 " + cursor.getInt(4));
+                count = cursor.getInt(2);
+                imgCount = cursor.getInt(3);
+                number = cursor.getInt(4);
+            }
+        }
 
         translate = (Button) findViewById(R.id.trans_button);
         translate.setOnClickListener(new View.OnClickListener() {
@@ -135,8 +140,6 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
                     translate.setText("TRANSLATE");
                     trans = true;
                 }
-
-
             }
         });
         init();
@@ -216,11 +219,12 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
         getSupportActionBar().setTitle(null);
         myToolbar.setBackgroundColor(Color.argb(50, 50, 50, 50));
         extractText(filePath);
-        if (sentences.size() != 0)
-            textswitcher.setText(sentences.get(0));
+        if (sentences.size() != 0) {
+            pdfSlide(2, true, false);
+        }
         extractImage(filePath);
         if (images.size() != 0)
-            imageswitcher.setImageDrawable(new BitmapDrawable(getResources(), images.get(0)));
+            imageswitcher.setImageDrawable(new BitmapDrawable(getResources(), images.get(imgCount)));
     }
 
     @Override
@@ -234,38 +238,6 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
         View v;
         PopupMenu p;
         switch (item.getItemId()) {
-//            case R.id.setting_Font_size:
-//                v = findViewById(R.id.empty);
-//                p = new PopupMenu(
-//                        getApplicationContext(), // 현재 화면의 제어권자
-//                        v); // anchor : 팝업을 띄울 기준될 위젯
-//
-//                getMenuInflater().inflate(R.menu.menu_font_size, p.getMenu());
-//                // 이벤트 처리
-//                p.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-//                    @Override
-//                    public boolean onMenuItemClick(MenuItem item) {
-//                        switch (item.getItemId()) {
-//                            case R.id.font_small:
-//                                fontSize = 20;
-//                                pdfSlide(2, true, false);
-//                                break;
-//                            case R.id.font_regular:
-//                                fontSize = 30;
-//                                pdfSlide(2, true, false);
-//                                break;
-//                            case R.id.font_large:
-//                                fontSize = 40;
-//                                pdfSlide(2, true, false);
-//                                break;
-//                        }
-//                        return false;
-//                    }
-//                });
-//                p.setGravity(Gravity.CENTER_HORIZONTAL);
-//                p.show(); // 메뉴를 띄우기
-//                break;
-
             case R.id.setting_number_of_sentences:
                 v = findViewById(R.id.empty);
                 p = new PopupMenu(
@@ -300,11 +272,7 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
                 p.setGravity(Gravity.CENTER_HORIZONTAL);
                 p.show(); // 메뉴를 띄우기
                 break;
-//            case R.id.setting_translation:
-//                pdfSlide(2, true, true);
-//                break;
             case R.id.all_view:
-                Log.i("Test", " " + sentences.size() + "   " + count);
                 Intent intent = new Intent(PdfActivity.this, AllPdfActivity.class);
                 intent.putExtra("fileName", filePath);
                 intent.putExtra("text", (ArrayList<String>) sentences);
@@ -330,14 +298,11 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
 
                     @Override
                     public boolean onQueryTextSubmit(String s) {
-//                        검색어 입력시 : onQueryTextChange
-//                        검색어 완료시 : onQueryTextSubmit
                         Intent intent = new Intent(Intent.ACTION_WEB_SEARCH);
                         intent.putExtra(SearchManager.QUERY, s);
                         startActivity(intent);
                         return false;
                     }
-
                     @Override
                     public boolean onQueryTextChange(String s) {
                         return false;
@@ -402,32 +367,20 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
             if (translation == true) {
                 asyncTask = new NaverTranslateTask();
                 asyncTask.execute(set);
-                //번역된 set
-//                TextView translateView = (TextView)findViewById(R.id.trans_view);
-//                Button pre_img = (Button)findViewById(R.id.prevImage);
-//                pre_img.setVisibility(View.GONE);
-//                Button next_img = (Button)findViewById(R.id.nextImage);
-//                next_img.setVisibility(View.GONE);
-//                ImageSwitcher img = (ImageSwitcher)findViewById(R.id.imgSwitcher);
-//                img.setVisibility(View.GONE);
-//                translateView.setVisibility(View.VISIBLE);
-//                translateView.setText(set);
             }
-            // set = set.replaceAll(System.getProperty("line.separator"), " ");
-
             textswitcher.setInAnimation(in);
             textswitcher.setOutAnimation(out);
             textswitcher.setText(set);
             count = localCount;
             myText.setText(myText.getText());
-
-
         } else {
             imageswitcher.setInAnimation(in);
             imageswitcher.setOutAnimation(out);
             imageswitcher.setImageDrawable(new BitmapDrawable(getResources(), images.get(localCount)));
             imgCount = localCount;
         }
+        // Update DB
+        db.execSQL("UPDATE info SET COUNT  = '" + count + "', IMGCOUNT = '" + imgCount + "', NUMBER = '" + number + "'  WHERE NAME ='" + filePath + "';");
     }
 
     @Override
@@ -468,7 +421,6 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
                 parsing(text);
             }
 
-            textswitcher.setText(sentences.get(0));
             document.close();
         } catch (Exception e) {
             //...
@@ -666,22 +618,6 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
                 }
             }
         }
-
-        //opennlp 사용하기
-//        try {
-//            InputStream inputStream = getAssets().open("en-sent.bin");
-//            SentenceModel model = new SentenceModel(inputStream);
-//
-//            //Instantiating the SentenceDetectorME class
-//            SentenceDetectorME detector = new SentenceDetectorME(model);
-//
-//            //Detecting the sentence
-//            String sentencesArray[] = detector.sentDetect(text);
-//            sentences = Arrays.asList(sentencesArray);
-//
-//        } catch (Exception e) {
-//            //
-//        }
     }
 
     private void merge() {
