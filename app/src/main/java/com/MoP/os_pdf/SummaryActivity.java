@@ -12,7 +12,6 @@ import android.widget.CompoundButton;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.Toast;
 import java.util.ArrayList;
 
 public class SummaryActivity extends Activity {
@@ -90,7 +89,6 @@ public class SummaryActivity extends Activity {
             @Override
 
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                Toast.makeText(SummaryActivity.this, "체크상태 = " + isChecked, Toast.LENGTH_SHORT).show();
                 if (isChecked == false) {
                     TextView t1 = findViewById(R.id.false_check);
                     TextView t2 = findViewById(R.id.true_check);

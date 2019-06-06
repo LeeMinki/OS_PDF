@@ -415,10 +415,10 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
             pdfStripper = new PDFTextStripper();
             text = pdfStripper.getText(document);
             if (text.substring(0, 30).matches(".*[ㄱ-ㅎㅏ-ㅣ가-힣]+.*")) {
-// 한글이 포함된 문자열
+                // 한글이 포함된 문자열
                 parsing_korean(text);
             } else {
-// 영어
+                // 영어
                 parsing(text);
             }
 
@@ -430,16 +430,10 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
     }
 
     private void parsing_korean(String text) {
-        //opennlp 사용하기
         try {
-            //Toast.makeText(getApplicationContext(), "한글", Toast.LENGTH_LONG).show();
             InputStream inputStream = getAssets().open("en-sent.bin");
             SentenceModel model = new SentenceModel(inputStream);
-
-            //Instantiating the SentenceDetectorME class
             SentenceDetectorME detector = new SentenceDetectorME(model);
-
-            //Detecting the sentence
             String sentencesArray[] = detector.sentDetect(text);
             sentences = Arrays.asList(sentencesArray);
 
@@ -449,15 +443,6 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
     }
 
     private void parsing(String text) {
-//        // 정규 표현식으로 split
-//        String[] words = text.split("\\.\\r\\n|\\.\\r|\\.\\n|\\.\\n\\r|\\.\\s|\\r\\n|\\r|\\n|\\n\\r");
-//
-//        for (String wo : words ){
-//            //wo.split("\n");
-//            sentences.add(wo);
-//        }
-
-//breakiterator 사용하기
         iterator.setText(text);
 
         int lastIndex = iterator.first();
