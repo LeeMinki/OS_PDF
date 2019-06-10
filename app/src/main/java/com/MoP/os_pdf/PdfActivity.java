@@ -28,6 +28,7 @@ import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.TextSwitcher;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
 import com.tom_roush.pdfbox.cos.COSName;
@@ -210,6 +211,8 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
 //                ImageView.
 //                        setGravity(Gravity.TOP | Gravity.CENTER_VERTICAL);
                 imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                imageView.setAdjustViewBounds(true);
+
                 imageView.setLayoutParams(new ImageSwitcher.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
                 return imageView;
             }
