@@ -48,14 +48,16 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolbar">
 
-        <Button
+        <ImageButton
             android:id="@+id/prev"
-            android:layout_width="wrap_content"
+            android:layout_width="90dp"
             android:layout_height="match_parent"
+            android:layout_gravity="center_vertical|center_horizontal"
             android:layout_weight="2.5"
+            android:adjustViewBounds="true"
             android:background="#00ff0000"
-            android:text="prev" />
-
+            android:scaleType="fitCenter"
+            app:srcCompat="@drawable/left" />
 
         <ScrollView
             android:layout_width="match_parent"
@@ -71,13 +73,16 @@
                 android:layout_marginTop="50dp" />
         </ScrollView>
 
-        <Button
+        <ImageButton
             android:id="@+id/next"
-            android:layout_width="wrap_content"
+            android:layout_width="90dp"
             android:layout_height="match_parent"
+            android:layout_gravity="center_vertical|center_horizontal"
             android:layout_weight="2.5"
             android:background="#00ff0000"
-            android:text="next" />
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"
+            app:srcCompat="@drawable/right" />
 
     </LinearLayout>
 
@@ -109,22 +114,22 @@
         app:layout_constraintTop_toBottomOf="@+id/linearLayout2"
         app:layout_constraintVertical_bias="1.0">
 
-        <Button
+        <ImageButton
             android:id="@+id/prevImage"
-            android:layout_width="wrap_content"
+            android:layout_width="90dp"
             android:layout_height="match_parent"
+            android:layout_gravity="center_vertical|center_horizontal"
             android:layout_weight="2.5"
+            android:adjustViewBounds="true"
             android:background="#00ff0000"
-            android:text="prev"
-            android:visibility="visible" />
-
+            android:scaleType="fitCenter"
+            app:srcCompat="@drawable/left" />
 
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="center_vertical|center_horizontal"
             android:layout_weight="2.5"
-
             android:orientation="vertical">
 
             <ImageSwitcher
@@ -132,27 +137,19 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_gravity="center_horizontal|center_vertical"
-
                 android:layout_marginTop="50dp"
                 android:visibility="visible" />
-
-            <!--<TextView-->
-            <!--android:id="@+id/trans_view"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="match_parent"-->
-            <!--android:visibility="gone" />-->
         </ScrollView>
 
-        <Button
+        <ImageButton
             android:id="@+id/nextImage"
-            android:layout_width="wrap_content"
+            android:layout_width="90dp"
             android:layout_height="match_parent"
+            android:layout_gravity="center_vertical|center_horizontal"
             android:layout_weight="2.5"
             android:background="#00ff0000"
-            android:text="next"
-            android:visibility="visible" />
-
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"
+            app:srcCompat="@drawable/right" />
     </LinearLayout>
-
-
 </android.support.constraint.ConstraintLayout>

@@ -22,6 +22,7 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageSwitcher;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -64,10 +65,10 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
     public List<String> sentences = new ArrayList<>();
     List<Bitmap> images = new ArrayList<>();
 
-    private static Button next;
-    private static Button prev;
-    private static Button nextImg;
-    private static Button prevImg;
+    private static ImageButton next;
+    private static ImageButton prev;
+    private static ImageButton nextImg;
+    private static ImageButton prevImg;
     public static TextSwitcher textswitcher;
     private static ImageSwitcher imageswitcher;
     private static TextView myText;
@@ -150,10 +151,10 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
     void init() {
         textswitcher = (TextSwitcher) findViewById(R.id.textSwitcher);
         imageswitcher = (ImageSwitcher) findViewById(R.id.imgSwitcher);
-        next = (Button) findViewById(R.id.next);
-        prev = (Button) findViewById(R.id.prev);
-        nextImg = (Button) findViewById(R.id.nextImage);
-        prevImg = (Button) findViewById(R.id.prevImage);
+        next = (ImageButton) findViewById(R.id.next);
+        prev = (ImageButton) findViewById(R.id.prev);
+        nextImg = (ImageButton) findViewById(R.id.nextImage);
+        prevImg = (ImageButton) findViewById(R.id.prevImage);
 
         in = AnimationUtils.loadAnimation(this,
                 android.R.anim.slide_in_left);
@@ -195,7 +196,7 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
             public View makeView() {
                 myText = new TextView(PdfActivity.this);
                 myText.setTextColor(Color.BLACK);
-                myText.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL);
+                myText.setGravity(Gravity.TOP | Gravity.START);
                 myText.setTextSize(fontSize);
                 myText.setEnabled(true);
                 myText.setTextIsSelectable(true);
@@ -438,6 +439,9 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
             SentenceModel model = new SentenceModel(inputStream);
             SentenceDetectorME detector = new SentenceDetectorME(model);
             String sentencesArray[] = detector.sentDetect(text);
+            for(int i = 0; i < sentencesArray.length; i ++) {
+                sentencesArray[i] = sentencesArray[i].replace("\n", "");
+            }
             sentences = new ArrayList<String>(Arrays.asList(sentencesArray));
         } catch (Exception e) {
             //

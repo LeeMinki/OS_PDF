@@ -92,14 +92,14 @@ public class MainActivity extends AppCompatActivity {
                     dialog.dismiss();
                     Intent intent = new Intent(MainActivity.this, PdfActivity.class);
                     intent.putExtra("fileName", mFileName);
-                    intent.putExtra("fontSize", 30);
+                    intent.putExtra("fontSize", 20);
                     startActivity(intent);
                 }
                 if (items[which] == "크게") {
                     dialog.dismiss();
                     Intent intent = new Intent(MainActivity.this, PdfActivity.class);
                     intent.putExtra("fileName", mFileName);
-                    intent.putExtra("fontSize", 45);
+                    intent.putExtra("fontSize", 25);
                     startActivity(intent);
                 }
                 dialog.dismiss(); // 누르면 바로 닫히는 형태
@@ -124,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
         File[] files = f.listFiles();
 
         if (!dirPath.equals(mRoot)) {
-            lItem.add("../"); //to parent folder
+            lItem.add(".."); //to parent folder
             lPath.add(f.getParent());
         }
 
