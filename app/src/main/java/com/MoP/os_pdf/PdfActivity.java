@@ -438,8 +438,7 @@ public class PdfActivity extends AppCompatActivity implements View.OnTouchListen
             SentenceModel model = new SentenceModel(inputStream);
             SentenceDetectorME detector = new SentenceDetectorME(model);
             String sentencesArray[] = detector.sentDetect(text);
-            sentences = Arrays.asList(sentencesArray);
-
+            sentences = new ArrayList<String>(Arrays.asList(sentencesArray));
         } catch (Exception e) {
             //
         }
