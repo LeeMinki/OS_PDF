@@ -46,7 +46,8 @@ public class MainActivity extends AppCompatActivity {
         checkPermission();
         mPath = (TextView) findViewById(R.id.tvPath);
         lvFileControl = (ListView) findViewById(R.id.lvFileControl);
-        getDir(mRoot);
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)
+            getDir(mRoot);
 
         lvFileControl.setOnItemClickListener(new OnItemClickListener() {
             @Override
@@ -234,6 +235,7 @@ public class MainActivity extends AppCompatActivity {
                         return;
                     }
                 }
+                getDir(mRoot);
                 break;
             case MY_PERMISSION_INTERNET:
                 for (int i = 0; i < grantResults.length; i++) {
